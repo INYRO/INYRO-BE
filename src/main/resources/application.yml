@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: inyro
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
