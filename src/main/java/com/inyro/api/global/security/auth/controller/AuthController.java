@@ -1,7 +1,5 @@
-package com.inyro.api.domain.auth.controller;
+package com.inyro.api.global.security.auth.controller;
 
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
-import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
 import com.inyro.api.global.security.auth.service.AuthService;
@@ -24,14 +22,6 @@ import java.security.SignatureException;
 @RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "Auth 관련 API")
 public class AuthController {
-
-    private final AuthCommandService authCommandService;
-
-    @PostMapping("/signup")
-    public CustomResponse<String> signUp(@RequestBody AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
-        authCommandService.signUp(authSignUpReqDTO);
-        return CustomResponse.onSuccess("회원가입 성공");
-    }
 
     private final AuthService authService;
 
@@ -80,4 +70,5 @@ public class AuthController {
         authService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
     }
+
 }

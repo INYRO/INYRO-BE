@@ -1,8 +1,8 @@
 package com.inyro.api.global.security.exception.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.global.apiPayload.CustomResponse;
-import com.inyro.api.global.security.exception.AuthErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,8 +19,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json; charset=UTF-8");
         response.setStatus(401);
         CustomResponse<Object> errorResponse = CustomResponse.onFailure(
-                AuthErrorCode._UNAUTHORIZED.getCode(),
-                AuthErrorCode._UNAUTHORIZED.getMessage(),
+                AuthErrorCode.AUTH_UNAUTHORIZED.getCode(),
+                AuthErrorCode.AUTH_UNAUTHORIZED.getMessage(),
                 null
         );
         ObjectMapper mapper = new ObjectMapper();

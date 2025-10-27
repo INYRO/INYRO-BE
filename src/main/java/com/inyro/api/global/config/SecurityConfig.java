@@ -1,6 +1,6 @@
 package com.inyro.api.global.config;
 
-import com.inyro.api.global.security.auth.handler.CustomLoginFilter;
+import com.inyro.api.global.security.filter.CustomLoginFilter;
 import com.inyro.api.global.security.exception.handler.JwtAccessDeniedHandler;
 import com.inyro.api.global.security.exception.handler.JwtAuthenticationEntryPoint;
 import com.inyro.api.global.security.filter.CustomLogoutHandler;

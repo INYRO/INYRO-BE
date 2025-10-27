@@ -1,12 +1,9 @@
-package com.inyro.api.domain.auth.service.command;
+package com.inyro.api.global.security.auth.service;
 
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
 import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 
-public interface AuthCommandService {
-    void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO);
-
+public interface AuthService {
     JwtDto reissueToken(JwtDto jwtDto);
 
     void resetPassword(String email, AuthRequestDto.PasswordResetRequestDto passwordResetRequestDto);
