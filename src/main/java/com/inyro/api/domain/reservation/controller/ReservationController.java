@@ -1,4 +1,4 @@
-package com.inyro.api.domain.user.controller;
+package com.inyro.api.domain.reservation.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
-@Tag(name = "User", description = "User 관련 API")
-public class UserController {
+@RequestMapping("/api/v1/reservations")
+@Tag(name = "Reservation", description = "Reservation 관련 API")
+public class ReservationController {
 }
