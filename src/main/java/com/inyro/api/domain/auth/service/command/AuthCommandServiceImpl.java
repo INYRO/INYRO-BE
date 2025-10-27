@@ -45,12 +45,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         String accessToken = tokenDto.accessToken();
         String refreshToken = tokenDto.refreshToken();
 
-        //Access Token 으로부터 사용자 Email 추출
-        String email = jwtUtil.getEmail(refreshToken); // **수정부분**
-        log.info("[ Auth Service ] Email ---> {}", email);
+        //Access Token 으로부터 사용자 Sno 추출
+        String sno = jwtUtil.getSno(refreshToken); // **수정부분**
+        log.info("[ Auth Service ] Sno ---> {}", sno);
 
         //Access Token 에서의 Email 로 부터 DB 에 저장된 Refresh Token 가져오기
-        Token refreshTokenByDB = tokenRepository.findByEmail(email).orElseThrow(
+        Token refreshTokenByDB = tokenRepository.findBySno(sno).orElseThrow(
                 () -> new AuthException(AuthErrorCode.INVALID_TOKEN)
         );
 
@@ -69,13 +69,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPassword(String email, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto) {
+    public void resetPassword(String sno, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto) {
 
 //        if (!passwordResetRequestDto.newPassword().equals(passwordResetRequestDto.newPasswordConfirmation())) {
 //            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
 //        }
 //
-//        Member member = memberRepository.findByEmail(email)
+//        Member member = memberRepository.findByEmail(sno)
 //                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 //
 //        Auth auth = member.getAuth();

@@ -81,11 +81,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         log.info("[ JwtAuthorizationFilter ] Access Token 유효성 검증 성공. ");
 
         // 2. Access Token에서 사용자 정보 추출 후 CustomUserDetails 생성
-        String email = jwtUtil.getEmail(accessToken);
+        String sno = jwtUtil.getSno(accessToken);
         Role role = jwtUtil.getRoles(accessToken);
-        log.info("[ JwtAuthorizationFilter ] email = {}, role = {}", email, role);
+        log.info("[ JwtAuthorizationFilter ] sno = {}, role = {}", sno, role);
 
-        CustomUserDetails userDetails = new CustomUserDetails(email, "", role);
+        CustomUserDetails userDetails = new CustomUserDetails(sno, "", role);
 
         log.info("[ JwtAuthorizationFilter ] UserDetails 객체 생성 성공");
 

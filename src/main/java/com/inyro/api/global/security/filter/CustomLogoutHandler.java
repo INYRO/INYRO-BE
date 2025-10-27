@@ -36,8 +36,8 @@ public class CustomLogoutHandler implements LogoutHandler {
         redisTemplate.opsForValue().set("Logout " + accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
         log.info("[ CustomLogoutHandler ] Logout 블랙리스트 등록 완료");
 
-        String email = jwtUtil.getEmail(accessToken);
-        Optional<Token> token = tokenRepository.findByEmail(email);
+        String sno = jwtUtil.getSno(accessToken);
+        Optional<Token> token = tokenRepository.findBySno(sno);
         token.ifPresent(tokenRepository::delete);
         log.info("[ CustomLogoutHandler ] 블랙리스트 RefreshToken 삭제 완료");
     }

@@ -2,10 +2,10 @@ package com.inyro.api.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.inyro.api.domain.auth.dto.request.AuthReqDto;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.global.apiPayload.CustomResponse;
-import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
@@ -40,22 +40,22 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         log.info("[ Login Filter ]  로그인 시도 : Custom Login Filter 작동 ");
         ObjectMapper objectMapper = new ObjectMapper();
-        AuthRequestDto.LoginRequestDto requestBody;
+        AuthReqDto.LoginRequestDto requestBody;
         try {
-            requestBody = objectMapper.readValue(request.getInputStream(), AuthRequestDto.LoginRequestDto.class);
+            requestBody = objectMapper.readValue(request.getInputStream(), AuthReqDto.LoginRequestDto.class);
         } catch (IOException e) {
             throw new AuthException(AuthErrorCode.AUTH_NOT_FOUND);
         }
 
         //Request Body 에서 추출
-        String email = requestBody.email(); //Email 추출
+        String sno = requestBody.sno(); //Sno 추출
         String password = requestBody.password(); //password 추출
-        log.info("[ Login Filter ]  Email ---> {} ", email);
+        log.info("[ Login Filter ]  Sno ---> {} ", sno);
         log.info("[ Login Filter ]  Password ---> {} ", password);
 
         //UserNamePasswordToken 생성 (인증용 객체)
         UsernamePasswordAuthenticationToken authToken
-                = new UsernamePasswordAuthenticationToken(email, password, null);
+                = new UsernamePasswordAuthenticationToken(sno, password, null);
 
 
         log.info("[ Login Filter ] 인증용 객체 UsernamePasswordAuthenticationToken 이 생성되었습니다. ");

@@ -17,7 +17,7 @@ public class AuthReqDto {
 
     @Builder
     public record LoginRequestDto(
-            String email,
+            String sno,
             String password
     ) {
     }

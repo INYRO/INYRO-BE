@@ -17,6 +17,6 @@ import lombok.NoArgsConstructor;
 public class Token {
 
     @Id
-    private String email;
+    private String sno;
     private String token;
 }
