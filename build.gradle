@@ -48,7 +48,8 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-
+	// JSOUP
+	implementation 'org.jsoup:jsoup:1.16.1'
 }
 
 tasks.named('test') {
