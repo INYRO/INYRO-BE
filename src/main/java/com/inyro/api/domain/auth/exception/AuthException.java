@@ -1,7 +1,9 @@
 package com.inyro.api.domain.auth.exception;
 
-public class AuthException extends RuntimeException {
-    public AuthException(String message) {
-        super(message);
+import com.inyro.api.global.apiPayload.exception.CustomException;
+
+public class AuthException extends CustomException {
+    public AuthException(AuthErrorCode errorCode) {
+        super(errorCode);
     }
 }

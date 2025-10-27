@@ -1,4 +1,18 @@
 package com.inyro.api.domain.user.exception;
 
-public enum UserErrorCode {
+import com.inyro.api.global.apiPayload.code.BaseErrorCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.springframework.http.HttpStatus;
+
+@Getter
+@AllArgsConstructor
+public enum UserErrorCode implements BaseErrorCode {
+    // ErrorCode
+
+    ;
+
+    private final HttpStatus httpStatus;
+    private final String code;
+    private final String message;
 }

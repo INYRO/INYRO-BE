@@ -1,7 +1,9 @@
 package com.inyro.api.domain.user.exception;
 
-public class UserException extends RuntimeException {
-    public UserException(String message) {
-        super(message);
+import com.inyro.api.global.apiPayload.exception.CustomException;
+
+public class UserException extends CustomException {
+    public UserException(UserErrorCode errorCode) {
+        super(errorCode);
     }
 }

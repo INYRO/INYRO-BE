@@ -1,7 +1,9 @@
 package com.inyro.api.domain.admin.exception;
 
-public class AdminException extends RuntimeException {
-    public AdminException(String message) {
-        super(message);
+import com.inyro.api.global.apiPayload.exception.CustomException;
+
+public class AdminException extends CustomException {
+    public AdminException(AdminErrorCode errorCode) {
+        super(errorCode);
     }
 }
