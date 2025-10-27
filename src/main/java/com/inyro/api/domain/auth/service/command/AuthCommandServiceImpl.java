@@ -7,7 +7,6 @@ import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
-import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
@@ -70,7 +69,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPassword(String email, AuthRequestDto.PasswordResetRequestDto passwordResetRequestDto) {
+    public void resetPassword(String email, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto) {
 
 //        if (!passwordResetRequestDto.newPassword().equals(passwordResetRequestDto.newPasswordConfirmation())) {
 //            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
@@ -94,7 +93,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPasswordWithCode(String passwordTokenHeader, AuthRequestDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto) {
+    public void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto) {
 //        final String uuid = passwordTokenHeader.replace("PasswordToken ", "").trim();
 //        log.info("헤더다 : {}", passwordTokenHeader);
 //        final String redisKey = "password_token : " + uuid;

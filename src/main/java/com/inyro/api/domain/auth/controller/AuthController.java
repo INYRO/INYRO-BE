@@ -1,10 +1,9 @@
 package com.inyro.api.domain.auth.controller;
 
 import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
-import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
-import com.inyro.api.global.security.auth.service.AuthService;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,8 +32,6 @@ public class AuthController {
         return CustomResponse.onSuccess("회원가입 성공");
     }
 
-    private final AuthService authService;
-
     //토큰 재발급 API
     @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
@@ -44,13 +41,13 @@ public class AuthController {
 
         log.info("[ Auth Controller ] 토큰을 재발급합니다. ");
 
-        return CustomResponse.onSuccess(authService.reissueToken(jwtDto));
+        return CustomResponse.onSuccess(authCommandService.reissueToken(jwtDto));
     }
 
     @Operation(summary = "login", description = "이메일과 비밀번호로 로그인을 해 jwt 토큰을 받는다.")
     @PostMapping("/login")
     public CustomResponse<?> login(
-            @RequestBody AuthRequestDto.LoginRequestDto memberLoginRequestDto
+            @RequestBody AuthReqDto.LoginRequestDto memberLoginRequestDto
     ) {
         return null;
     }
@@ -65,9 +62,9 @@ public class AuthController {
     @PostMapping("/password/reset")
     public CustomResponse<String> resetPassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody @Valid AuthRequestDto.PasswordResetRequestDto passwordResetRequestDto
+            @RequestBody @Valid AuthReqDto.PasswordResetRequestDto passwordResetRequestDto
     ) {
-        authService.resetPassword(customUserDetails.getUsername(), passwordResetRequestDto);
+        authCommandService.resetPassword(customUserDetails.getUsername(), passwordResetRequestDto);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호가 변경되었습니다.");
     }
 
@@ -75,9 +72,9 @@ public class AuthController {
     @PostMapping("/password/reset/code")
     public CustomResponse<String> resetPasswordWithCode(
             @RequestHeader("PasswordToken") String passwordTokenHeader,
-            @RequestBody AuthRequestDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto
+            @RequestBody AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto
     ) {
-        authService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
+        authCommandService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
     }
 }

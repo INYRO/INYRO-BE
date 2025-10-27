@@ -1,7 +1,6 @@
 package com.inyro.api.domain.auth.service.command;
 
 import com.inyro.api.domain.auth.dto.request.AuthReqDto;
-import com.inyro.api.global.security.auth.dto.request.AuthRequestDto;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 
 public interface AuthCommandService {
@@ -9,7 +8,7 @@ public interface AuthCommandService {
 
     JwtDto reissueToken(JwtDto jwtDto);
 
-    void resetPassword(String email, AuthRequestDto.PasswordResetRequestDto passwordResetRequestDto);
+    void resetPassword(String email, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto);
 
-    void resetPasswordWithCode(String passwordTokenHeader, AuthRequestDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto);
+    void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto);
 }
