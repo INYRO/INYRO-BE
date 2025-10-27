@@ -1,6 +1,7 @@
 package com.inyro.api.domain.member.entity;
 
 import com.inyro.api.domain.auth.entity.Auth;
+import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,4 +32,8 @@ public class Member extends BaseEntity {
 
     @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
     private Auth auth;
+
+    public void linkAuth(Auth auth) {
+        this.auth = auth;
+    }
 }
