@@ -1,4 +1,4 @@
-package com.inyro.api.domain.user.service.query;
+package com.inyro.api.domain.member.service.command;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -9,5 +9,5 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class UserQueryServiceImpl implements UserQueryService {
+public class MemberCommandServiceImpl implements MemberCommandService {
 }

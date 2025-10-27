@@ -1,4 +1,4 @@
-package com.inyro.api.domain.user.entity;
+package com.inyro.api.domain.member.entity;
 
 import com.inyro.api.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -9,8 +9,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Table(name = "user")
-public class User extends BaseEntity {
+@Table(name = "member")
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package com.inyro.api.domain.user.exception;
+package com.inyro.api.domain.member.exception;
 
 import com.inyro.api.global.apiPayload.code.BaseErrorCode;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
-public enum UserErrorCode implements BaseErrorCode {
+public enum MemberErrorCode implements BaseErrorCode {
     // ErrorCode
 
     ;
