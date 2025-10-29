@@ -50,6 +50,13 @@ dependencies {
 
 	// JSOUP
 	implementation 'org.jsoup:jsoup:1.16.1'
+
+	// JSON
+	implementation 'org.json:json:20250517'
+
+	// WebClient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 }
 
 tasks.named('test') {
