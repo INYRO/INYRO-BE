@@ -23,7 +23,9 @@ public class AuthReqDto {
 
     @Builder
     public record AuthLoginReqDTO(
+            @NotBlank(message = "학번 입력은 필수입니다.")
             String sno,
+            @NotBlank(message = "비밀번호 입력은 필수입니다.")
             String password
     ) {
     }
@@ -39,7 +41,7 @@ public class AuthReqDto {
     ) {
     }
 
-    public record PasswordResetWithCodeRequestDto(
+    public record AuthPasswordResetWithCodeReqDTO(
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,

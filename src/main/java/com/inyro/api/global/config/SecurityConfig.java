@@ -7,6 +7,7 @@ import com.inyro.api.global.security.filter.CustomLogoutHandler;
 import com.inyro.api.global.security.filter.CustomLogoutSuccessHandler;
 import com.inyro.api.global.security.filter.JwtAuthorizationFilter;
 import com.inyro.api.global.security.jwt.JwtUtil;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
+    private final Validator validator;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomLogoutHandler jwtLogoutHandler;
@@ -48,7 +50,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
-        CustomLoginFilter loginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+        CustomLoginFilter loginFilter = new CustomLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, validator);
         loginFilter.setFilterProcessesUrl("/api/v1/auth/login");
 
         http
