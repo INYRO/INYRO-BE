@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ReservationErrorCode implements BaseErrorCode {
-    RESERVATION_TIME_CONFLICT(HttpStatus.CONFLICT, "R001", "이미 해당 시간대에 예약이 존재합니다."),
-
+    RESERVATION_TIME_CONFLICT(HttpStatus.CONFLICT, "R409", "이미 해당 시간대에 예약이 존재합니다."),
+    RESERVATION_TIME_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "R400", "해당 시간대는 예약이 불가능합니다.")
     ;
 
     private final HttpStatus httpStatus;
