@@ -18,7 +18,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     public Member createMember(String name, String sno, String major) {
-        Member member = MemberConverter.toMember(sno, major, name);
+        Member member = MemberConverter.toMember(name, sno, major);
         return memberRepository.save(member);
     }
 }
