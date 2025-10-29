@@ -7,8 +7,6 @@ import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import com.inyro.api.domain.auth.dto.response.AuthResDto;
-import com.inyro.api.domain.auth.service.command.AuthCommandService;
-import com.inyro.api.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -62,26 +60,25 @@ public class AuthController {
 
     @Operation(summary = "비밀번호 변경", description = "현재 비밀번호와 바꿀 비밀번호를 입력해 비밀번호를 변경한다.")
     @PostMapping("/password/reset")
-    public CustomResponse<String> resetPassword(
+    public CustomResponse<String> changePassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @Valid @RequestBody AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO
+            @Valid @RequestBody AuthReqDto.PasswordChangeReqDTO authPasswordResetReqDTO
     ) {
-        authCommandService.resetPassword(customUserDetails.getUsername(), authPasswordResetReqDTO);
+        authCommandService.changePassword(customUserDetails.getUsername(), authPasswordResetReqDTO);
         return CustomResponse.onSuccess("비밀번호가 변경되었습니다.");
     }
 
     @Operation(summary = "비밀번호 재설정 (잃어버렸으르 때)", description = "메일 인증 코드 확인으로 발급된 토큰")
-    @PostMapping("/password/reset/code")
-    public CustomResponse<String> resetPasswordWithCode(
-            @RequestHeader("PasswordToken") String passwordTokenHeader,
-            @RequestBody AuthReqDto.AuthPasswordResetWithCodeReqDTO passwordResetWithCodeRequestDto
+    @PostMapping("/password/reset/smul")
+    public CustomResponse<String> resetPassword(
+            @RequestBody AuthReqDto.PasswordResetReqDTO passwordResetReqDTO
     ) {
-        authCommandService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
+        authCommandService.resetPassword(passwordResetReqDTO);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
     }
 
     @Operation(summary = "샘물 인증", description = "사용자로부터 샘물 아이디 비밀번호를 입력받아 동아리 회원인지 인증")
-    @PostMapping()
+    @PostMapping("/smul")
     public CustomResponse<AuthResDto.SmulResDto> authenticate(AuthReqDto.SmulReqDto smulReqDto) {
         return CustomResponse.onSuccess(authCommandService.authenticate(smulReqDto));
     }

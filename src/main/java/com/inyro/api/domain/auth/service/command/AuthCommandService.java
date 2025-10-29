@@ -10,9 +10,9 @@ public interface AuthCommandService {
 
     JwtDto reissueToken(JwtDto jwtDto);
 
-    void resetPassword(String sno, AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO);
+    void changePassword(String sno, AuthReqDto.PasswordChangeReqDTO passwordChangeReqDTO);
 
-    void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.AuthPasswordResetWithCodeReqDTO passwordResetWithCodeRequestDto);
+    void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO);
 
     AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto);
 }
