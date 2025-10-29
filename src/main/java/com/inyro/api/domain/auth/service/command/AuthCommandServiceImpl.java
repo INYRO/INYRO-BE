@@ -6,7 +6,11 @@ import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.domain.member.entity.Member;
+import com.inyro.api.domain.member.exception.MemberErrorCode;
+import com.inyro.api.domain.member.exception.MemberException;
+import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
+import com.inyro.api.domain.member.validator.MemberValidator;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
@@ -24,13 +28,14 @@ import org.springframework.stereotype.Service;
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final MemberCommandService memberCommandService;
+    private final MemberValidator memberValidator;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
 
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
-
+        memberValidator.validateDuplicateSno(authSignUpReqDTO.sno());
         Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.major());
 
         String password = passwordEncoder.encode(authSignUpReqDTO.password());
@@ -42,7 +47,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     @Override
     public JwtDto reissueToken(JwtDto tokenDto) {
         log.info("[ Auth Service ] 토큰 재발급을 시작합니다.");
-        String accessToken = tokenDto.accessToken();
         String refreshToken = tokenDto.refreshToken();
 
         //Access Token 으로부터 사용자 Sno 추출
