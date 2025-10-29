@@ -23,8 +23,8 @@ public class Member extends BaseEntity {
     @Column(name = "sno", nullable = false)
     private String sno;
 
-    @Column(name = "major", nullable = false)
-    private String major;
+    @Column(name = "dept", nullable = false)
+    private String dept;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
