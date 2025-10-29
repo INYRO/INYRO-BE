@@ -1,5 +1,6 @@
 package com.inyro.api.domain.auth.dto.request;
 
+import com.inyro.api.domain.auth.validator.PasswordMatches;
 import com.inyro.api.global.security.utils.PasswordPattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,9 +28,8 @@ public class AuthReqDto {
     ) {
     }
 
+    @PasswordMatches
     public record AuthPasswordResetReqDTO(
-            @NotBlank
-            String currentPassword,
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,
