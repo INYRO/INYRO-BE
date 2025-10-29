@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final MemberCommandService memberCommandService;
-    private final MemberValidator memberValidator;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
@@ -36,10 +36,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
         memberValidator.validateDuplicateSno(authSignUpReqDTO.sno());
+        if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
+            throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
+        }
         Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.major());
 
-        String password = passwordEncoder.encode(authSignUpReqDTO.password());
-        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, password, member);
+        String encodedPassword = passwordEncoder.encode(authSignUpReqDTO.password());
+        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, encodedPassword, member);
 
         member.linkAuth(auth);
     }
