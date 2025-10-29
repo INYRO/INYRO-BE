@@ -10,7 +10,7 @@ import java.time.LocalTime;
 public class ReservationValidator {
 
     private static final LocalTime OPENING_TIME = LocalTime.of(9, 0);
-    private static final LocalTime CLOSING_TIME = LocalTime.of(21, 30);
+    private static final LocalTime CLOSING_TIME = LocalTime.of(22, 0);
 
     public void validateTimeRange(LocalTime start, LocalTime end) {
         if (start.isBefore(OPENING_TIME) || end.isAfter(CLOSING_TIME)) {
