@@ -23,6 +23,7 @@ public class Auth extends BaseEntity {
     private String password;
 
     @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @OneToOne(fetch = FetchType.LAZY)
