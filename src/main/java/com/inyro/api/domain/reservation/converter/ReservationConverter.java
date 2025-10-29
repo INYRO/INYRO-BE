@@ -7,10 +7,15 @@ import com.inyro.api.domain.reservation.entity.Reservation;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReservationConverter {
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public static Reservation toReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, LocalTime start, LocalTime end, Member member) {
         return Reservation.builder()
@@ -29,6 +34,16 @@ public class ReservationConverter {
                 .reservationName(reservationName)
                 .startTime(String.valueOf(start))
                 .endTime(String.valueOf(end))
+                .build();
+    }
+
+    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, List<LocalTime> availableSlots) {
+        List<String> formatted = availableSlots.stream()
+                .map(t -> t.format(TIME_FORMATTER))
+                .toList();
+        return  ReservationResDto.ReservationAvailableResDTO.builder()
+                .date(date)
+                .availableSlots(formatted)
                 .build();
     }
 }

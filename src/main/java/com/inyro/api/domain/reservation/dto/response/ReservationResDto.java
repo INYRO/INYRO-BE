@@ -2,7 +2,8 @@ package com.inyro.api.domain.reservation.dto.response;
 
 import lombok.Builder;
 
-import java.time.LocalTime;
+import java.time.LocalDate;
+import java.util.List;
 
 public class ReservationResDto {
 
@@ -12,5 +13,11 @@ public class ReservationResDto {
             String reservationName,
             String startTime,
             String endTime
+    ){}
+
+    @Builder
+    public record ReservationAvailableResDTO (
+            LocalDate date,
+            List<String> availableSlots
     ){}
 }

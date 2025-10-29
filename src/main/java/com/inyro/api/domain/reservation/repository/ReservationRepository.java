@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -17,4 +18,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         AND (r.startTime < :endTime AND r.endTime > :startTime)
     """)
     boolean existsByDateAndTimeSlots(@Param("date")LocalDate date, @Param("startTime") LocalTime startDate,@Param("endTime") LocalTime endDate);
+
+    List<Reservation> findAllByDate(LocalDate date);
 }
