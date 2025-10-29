@@ -84,7 +84,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto) {
+    public void resetPasswordByVerification(AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO) {
 //        final String uuid = passwordTokenHeader.replace("PasswordToken ", "").trim();
 //        log.info("헤더다 : {}", passwordTokenHeader);
 //        final String redisKey = "password_token : " + uuid;
@@ -100,11 +100,11 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 //
 //        Auth auth = member.getAuth();
 //
-//        if (!passwordResetWithCodeRequestDto.newPassword().equals(passwordResetWithCodeRequestDto.newPasswordConfirmation())) {
+//        if (!authPasswordResetWithCodeReqDTO.newPassword().equals(authPasswordResetWithCodeReqDTO.newPasswordConfirmation())) {
 //            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
 //        }
 //
-//        auth.updatePassword(passwordEncoder.encode(passwordResetWithCodeRequestDto.newPassword()));
+//        auth.updatePassword(passwordEncoder.encode(authPasswordResetWithCodeReqDTO.newPassword()));
 //        authRepository.save(auth);
 //
 //        mailService.sendPasswordChangeNotification(email);

@@ -10,5 +10,5 @@ public interface AuthCommandService {
 
     void resetPassword(String sno, AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO);
 
-    void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto);
+    void resetPasswordByVerification(AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO);
 }
