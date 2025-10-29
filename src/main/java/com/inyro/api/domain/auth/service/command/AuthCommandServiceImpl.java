@@ -33,8 +33,9 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto) {
-        AuthResDto.ClubInfo clubInfo = getClubData(smulReqDto);
-        AuthResDto.DeptInfo deptInfo = getDept(smulReqDto);
+        String cookieHeader = getCookieHeader(smulReqDto);
+        AuthResDto.ClubInfo clubInfo = getClubData(smulReqDto, cookieHeader);
+        AuthResDto.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
         return AuthConverter.toSmulResDto(clubInfo, deptInfo);
     }
 
@@ -57,14 +58,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         }
     }
 
-    private AuthResDto.ClubInfo getClubData(AuthReqDto.SmulReqDto smulReqDto) {
-
-        Map<String, String> cookies = login(smulReqDto);
-
-        String cookieHeader = cookies.entrySet().stream()
-                .map(e -> e.getKey() + "=" + e.getValue())
-                .collect(Collectors.joining("; "));
-
+    private AuthResDto.ClubInfo getClubData(AuthReqDto.SmulReqDto smulReqDto, String cookieHeader) {
         AuthResDto.ClubInfoDto responseBody = clubWebClient.post()
                 .uri("/UsdMembReg/list.do")
                 .header("Cookie", cookieHeader)
@@ -87,18 +81,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.NO_CLUB_INFO));
     }
 
-    private AuthResDto.DeptInfo getDept(AuthReqDto.SmulReqDto smulReqDto) {
-        Map<String, String> cookies = login(smulReqDto);
-        String cookieHeader = cookies.entrySet().stream()
-                .map(e -> e.getKey() + "=" + e.getValue())
-                .collect(Collectors.joining("; "));
+    private AuthResDto.DeptInfo getDeptData(AuthReqDto.SmulReqDto smulReqDto, String cookieHeader) {
         AuthResDto.DeptInfoDto responseBody = clubWebClient.post()
                 .uri("/UsrSchMng/selectStdInfo.do")
                 .header("Cookie", cookieHeader)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(BodyInserters.fromFormData("_AUTH_MENU_KEY", "usrCPsnlInfoUpd-STD")
-//                        .with("@d1#strCampusRcd", "CMN001.0001")
-//                        .with("@d1#strSchYear", String.valueOf(LocalDate.now().getYear()))
                         .with("@d1#strStdNo", smulReqDto.sno())
                         .with("@d#", "@d1#")
                         .with("@d1#", "dmParam")
@@ -107,6 +95,16 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                 .retrieve()
                 .bodyToMono(AuthResDto.DeptInfoDto.class)
                 .block();
+        if (responseBody == null) {
+            throw new AuthException(AuthErrorCode.AUTH_INTERNAL_SERVER_ERROR);
+        }
         return responseBody.dsStdInfoList().get(0);
+    }
+
+    private String getCookieHeader(AuthReqDto.SmulReqDto smulReqDto) {
+        Map<String, String> cookies = login(smulReqDto);
+        return cookies.entrySet().stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.joining("; "));
     }
 }
