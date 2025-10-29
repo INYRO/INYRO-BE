@@ -14,6 +14,7 @@ import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
+import com.inyro.api.global.utils.RedisUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,12 +45,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
     private final WebClient clubWebClient;
+    private final RedisUtils<String> redisUtils;
 
     private static final String LOGIN_URL = "https://smsso.smu.ac.kr/Login.do";
     private static final String BASE_URL = "https://smul.smu.ac.kr";
 
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
+        if (!redisUtils.hasKey(authSignUpReqDTO.sno())) {
+            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
+        }
+
         if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
             throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
         }
@@ -58,6 +65,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         Auth auth = AuthConverter.toAuth(authSignUpReqDTO, encodedPassword, member);
 
         member.linkAuth(auth);
+
+        redisUtils.delete(authSignUpReqDTO.sno());
     }
 
     @Override
@@ -128,6 +137,9 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     public AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto) {
         String cookieHeader = getCookieHeader(smulReqDto);
         AuthResDto.ClubInfo clubInfo = getClubData(smulReqDto, cookieHeader);
+        if (clubInfo.STUD_APLY_YN().equals("Y")) {
+            redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
+        }
         AuthResDto.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
         return AuthConverter.toSmulResDto(clubInfo, deptInfo);
     }
@@ -140,7 +152,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                     .data("user_password", smulReqDto.password())
                     .execute();
             if (loginResponse.url().toString().equals(LOGIN_URL))
-                throw new AuthException(AuthErrorCode.AUTH_UNAUTHORIZED);
+                throw new AuthException(AuthErrorCode.SMUL_UNAUTHORIZED);
             return Jsoup.connect(BASE_URL.concat("/index.do"))
                     .method(Connection.Method.GET)
                     .cookies(loginResponse.cookies())

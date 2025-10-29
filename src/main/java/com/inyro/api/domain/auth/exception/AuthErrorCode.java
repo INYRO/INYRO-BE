@@ -19,6 +19,7 @@ public enum AuthErrorCode implements BaseErrorCode {
     SMUL_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH500", "샘물 오류"),
     SMUL_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH403", "샘물 아이디 또는 비밀번호가 틀림"),
     NO_CLUB_INFO(HttpStatus.NOT_FOUND, "AUTH404", "이니로 동아리 정보가 존재하지 않음"),
+    SMUL_VALIDATION_DOES_NOT_EXIST(HttpStatus.UNPROCESSABLE_ENTITY, "AUTH422", "샘물 인증을 시도하지 않았거나 변조되었거나 만료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;
