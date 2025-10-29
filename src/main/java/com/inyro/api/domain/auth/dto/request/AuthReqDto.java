@@ -32,7 +32,7 @@ public class AuthReqDto {
     }
 
     @PasswordMatches
-    public record AuthPasswordResetReqDTO(
+    public record PasswordChangeReqDTO(
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,
@@ -42,7 +42,9 @@ public class AuthReqDto {
     ) {
     }
 
-    public record AuthPasswordResetWithCodeReqDTO(
+    public record PasswordResetReqDTO(
+            @NotBlank(message = "학번 입력은 필수입니다.")
+            String sno,
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,

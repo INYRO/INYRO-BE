@@ -98,7 +98,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPassword(String sno, AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO) {
+    public void changePassword(String sno, AuthReqDto.PasswordChangeReqDTO authPasswordResetReqDTO) {
         Member member = memberRepository.findBySno(sno)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -108,30 +108,19 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.AuthPasswordResetWithCodeReqDTO passwordResetWithCodeRequestDto) {
-//        final String uuid = passwordTokenHeader.replace("PasswordToken ", "").trim();
-//        log.info("헤더다 : {}", passwordTokenHeader);
-//        final String redisKey = "password_token : " + uuid;
-//
-//        final String email = redisTemplate.opsForValue().get(redisKey);
-//
-//        if (email == null) {
-//            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
-//        }
-//
-//        Member member = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-//
-//        Auth auth = member.getAuth();
-//
-//        if (!passwordResetWithCodeRequestDto.newPassword().equals(passwordResetWithCodeRequestDto.newPasswordConfirmation())) {
-//            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
-//        }
-//
-//        auth.updatePassword(passwordEncoder.encode(passwordResetWithCodeRequestDto.newPassword()));
-//        authRepository.save(auth);
-//
-//        mailService.sendPasswordChangeNotification(email);
+    public void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO) {
+        if (!redisUtils.hasKey(passwordResetReqDTO.sno())) {
+            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
+        }
+        if (!passwordResetReqDTO.newPassword().equals(passwordResetReqDTO.newPasswordConfirmation())) {
+            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
+        }
+        Member member = memberRepository.findBySno(passwordResetReqDTO.sno())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        Auth auth = member.getAuth();
+        auth.validateNotSamePassword(passwordResetReqDTO.newPassword(), passwordEncoder);
+        auth.resetPassword(passwordEncoder.encode(passwordResetReqDTO.newPassword()));
     }
     @Override
     public AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto) {
