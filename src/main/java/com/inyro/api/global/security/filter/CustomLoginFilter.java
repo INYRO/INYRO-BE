@@ -12,6 +12,8 @@ import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +35,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final Validator validator;
 
     //로그인 시도 메서드
     @Override
@@ -40,11 +45,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         log.info("[ Login Filter ]  로그인 시도 : Custom Login Filter 작동 ");
         ObjectMapper objectMapper = new ObjectMapper();
-        AuthReqDto.LoginRequestDto requestBody;
+        AuthReqDto.AuthLoginReqDTO requestBody;
         try {
-            requestBody = objectMapper.readValue(request.getInputStream(), AuthReqDto.LoginRequestDto.class);
+            requestBody = objectMapper.readValue(request.getInputStream(), AuthReqDto.AuthLoginReqDTO.class);
         } catch (IOException e) {
             throw new AuthException(AuthErrorCode.AUTH_NOT_FOUND);
+        }
+
+        //DTO Validation 체크
+        Set<ConstraintViolation<AuthReqDto.AuthLoginReqDTO>> violations = validator.validate(requestBody);
+        if (!violations.isEmpty()) {
+            String errorMessage = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", "));
+            throw new BadCredentialsException(errorMessage);
         }
 
         //Request Body 에서 추출
@@ -109,8 +123,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String errorMessage;
 
         if (failed instanceof BadCredentialsException) {
-            errorCode = String.valueOf(HttpStatus.UNAUTHORIZED.value());
-            errorMessage = "잘못된 정보입니다.";
+            String message = failed.getMessage();
+
+            // Validation 에러와 인증 실패 구분
+            if (message != null && message.contains("필수")) {
+                errorCode = String.valueOf(HttpStatus.BAD_REQUEST.value());
+                errorMessage = message;
+            } else {
+                errorCode = String.valueOf(HttpStatus.UNAUTHORIZED.value());
+                errorMessage = "학번 혹은 비밀번호가 잘못되었습니다.";
+            }
         } else if (failed instanceof LockedException) {
             errorCode = String.valueOf(HttpStatus.LOCKED.value());
             errorMessage = "계정이 잠금 상태입니다.";

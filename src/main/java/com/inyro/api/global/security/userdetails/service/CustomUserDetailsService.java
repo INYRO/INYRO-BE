@@ -1,11 +1,6 @@
 package com.inyro.api.global.security.userdetails.service;
 
-import com.inyro.api.domain.auth.exception.AuthErrorCode;
-import com.inyro.api.domain.auth.exception.AuthException;
-import com.inyro.api.domain.auth.repository.AuthRepository;
 import com.inyro.api.domain.member.entity.Member;
-import com.inyro.api.domain.member.exception.MemberErrorCode;
-import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.auth.entity.Auth;
 
@@ -23,7 +18,6 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-    private final AuthRepository authRepository;
 
     //Username(sno) 로 CustomUserDetail 을 가져오기
     @Override
@@ -31,16 +25,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         log.info("[ CustomUserDetailsService ] Sno 을 이용하여 User 를 검색합니다.");
         Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-        log.info("[ CustomUserDetailsService ] Member 를 이용하여 Auth 를 검색합니다.");
-        Auth auth = authRepository.findByMember(member)
-                .orElseThrow(() -> new AuthException(AuthErrorCode.AUTH_NOT_FOUND));
-//        Optional<Member> memberEntity = memberRepository.findByEmailAndNotDeleted(email);
-//        if (memberEntity.isPresent()) {
-//            Member member = memberEntity.get();
-//            return new CustomUserDetails(member.getEmail(),member.getPassword(), member.getRole());
-//        }
-//        throw new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 학번입니다."));
+
+        Auth auth = member.getAuth();
+        if (auth == null) {
+            log.error("[ CustomUserDetailsService ] Member에 Auth 정보가 존재하지 않습니다. sno: {}", sno);
+            throw new UsernameNotFoundException("인증 정보가 존재하지 않습니다.");
+        }
+
+        log.info("[ CustomUserDetailsService ] 사용자 인증 정보 조회 완료 → sno: {}", sno);
         return new CustomUserDetails(member.getSno(), auth.getPassword(), auth.getRole());
     }
 }

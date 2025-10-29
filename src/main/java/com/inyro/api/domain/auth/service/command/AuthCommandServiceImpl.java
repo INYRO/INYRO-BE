@@ -6,6 +6,9 @@ import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.domain.member.entity.Member;
+import com.inyro.api.domain.member.exception.MemberErrorCode;
+import com.inyro.api.domain.member.exception.MemberException;
+import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
@@ -24,17 +27,20 @@ import org.springframework.stereotype.Service;
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final MemberCommandService memberCommandService;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
 
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
-
+        if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
+            throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
+        }
         Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.major());
 
-        String password = passwordEncoder.encode(authSignUpReqDTO.password());
-        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, password, member.getId());
+        String encodedPassword = passwordEncoder.encode(authSignUpReqDTO.password());
+        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, encodedPassword, member);
 
         member.linkAuth(auth);
     }
@@ -42,7 +48,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     @Override
     public JwtDto reissueToken(JwtDto tokenDto) {
         log.info("[ Auth Service ] 토큰 재발급을 시작합니다.");
-        String accessToken = tokenDto.accessToken();
         String refreshToken = tokenDto.refreshToken();
 
         //Access Token 으로부터 사용자 Sno 추출
@@ -69,27 +74,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPassword(String sno, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto) {
+    public void resetPassword(String sno, AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO) {
+        Member member = memberRepository.findBySno(sno)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-//        if (!passwordResetRequestDto.newPassword().equals(passwordResetRequestDto.newPasswordConfirmation())) {
-//            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
-//        }
-//
-//        Member member = memberRepository.findByEmail(sno)
-//                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-//
-//        Auth auth = member.getAuth();
-//
-//        if (!passwordEncoder.matches(passwordResetRequestDto.currentPassword(), auth.getPassword())) {
-//            throw new AuthException(AuthErrorCode.CURRENT_PASSWORD_DOES_NOT_MATCH);
-//        }
-//        if (passwordEncoder.matches(passwordResetRequestDto.newPassword(), auth.getPassword())) {
-//            throw new AuthException(AuthErrorCode.NEW_PASSWORD_IS_CURRENT_PASSWORD);
-//        }
-//
-//        auth.updatePassword(passwordEncoder.encode(passwordResetRequestDto.newPassword()));
-//        authRepository.save(auth);
-
+        Auth auth = member.getAuth();
+        auth.validateNotSamePassword(authPasswordResetReqDTO.newPassword(), passwordEncoder);
+        auth.resetPassword(passwordEncoder.encode(authPasswordResetReqDTO.newPassword()));
     }
 
     @Override

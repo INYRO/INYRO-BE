@@ -44,6 +44,9 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
+        ex.getBindingResult().getGlobalErrors().forEach(error ->
+                errors.put(error.getObjectName(), error.getDefaultMessage())
+        );
 
         BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED_DTO_FILED;
         CustomResponse<Map<String, String>> errorResponse = CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors);
