@@ -37,4 +37,12 @@ public class ReservationController {
     public CustomResponse<ReservationResDto.ReservationAvailableResDTO> getAvailableReservations(@RequestParam LocalDate date){
         return CustomResponse.onSuccess(reservationQueryService.getAvailableReservation(date));
     }
+
+    @Operation(summary = "예약 삭제")
+    @DeleteMapping("/{reservationId}")
+    public CustomResponse<ReservationResDto.ReservationDeleteResDTO> deleteReservation(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable("reservationId") Long reservationId){
+        return CustomResponse.onSuccess(reservationCommandService.deleteReservation(reservationId, customUserDetails.getUsername()));
+    }
 }

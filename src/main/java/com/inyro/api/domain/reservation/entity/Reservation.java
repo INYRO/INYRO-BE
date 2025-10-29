@@ -1,6 +1,8 @@
 package com.inyro.api.domain.reservation.entity;
 
 import com.inyro.api.domain.member.entity.Member;
+import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
+import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,4 +41,11 @@ public class Reservation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void validateOwner(Long memberId) {
+        if (!this.member.getId().equals(memberId)) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_FORBIDDEN);
+        }
+    }
+
 }

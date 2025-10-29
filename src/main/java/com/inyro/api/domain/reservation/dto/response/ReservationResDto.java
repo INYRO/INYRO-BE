@@ -20,4 +20,10 @@ public class ReservationResDto {
             LocalDate date,
             List<String> availableSlots
     ){}
+
+    @Builder
+    public record ReservationDeleteResDTO (
+            Long reservationId,
+            String message
+    ){}
 }

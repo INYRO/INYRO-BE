@@ -48,4 +48,11 @@ public class ReservationConverter {
                 .availableSlots(formatted)
                 .build();
     }
+
+    public static ReservationResDto.ReservationDeleteResDTO toReservationDeleteResDTO(Long reservationId) {
+        return ReservationResDto.ReservationDeleteResDTO.builder()
+                .reservationId(reservationId)
+                .message("예약이 취소되었습니다.")
+                .build();
+    }
 }

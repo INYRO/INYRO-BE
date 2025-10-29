@@ -46,4 +46,16 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         reservationRepository.save(reservation);
         return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), start, end);
     }
+
+    @Override
+    public ReservationResDto.ReservationDeleteResDTO deleteReservation(Long reservationId, String sno) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        Member member = memberRepository.findBySno(sno)
+                        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        reservation.validateOwner(member.getId());
+        reservationRepository.delete(reservation);
+        return ReservationConverter.toReservationDeleteResDTO(reservationId);
+    }
 }
