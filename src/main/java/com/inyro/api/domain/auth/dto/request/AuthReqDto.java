@@ -8,6 +8,7 @@ import lombok.Builder;
 
 public class AuthReqDto {
 
+
     public record AuthSignUpReqDTO(
             @NotBlank
             String sno,
@@ -48,6 +49,12 @@ public class AuthReqDto {
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPasswordConfirmation
+    ) {
+    }
+  
+    public record SmulReqDto(
+            String sno,
+            String password
     ) {
     }
 }

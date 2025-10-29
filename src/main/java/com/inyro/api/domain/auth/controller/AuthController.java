@@ -1,10 +1,14 @@
 package com.inyro.api.domain.auth.controller;
 
 import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+
 import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
+import com.inyro.api.domain.auth.dto.response.AuthResDto;
+import com.inyro.api.domain.auth.service.command.AuthCommandService;
+import com.inyro.api.global.apiPayload.CustomResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -22,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthCommandService authCommandService;
+
 
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
@@ -70,5 +78,10 @@ public class AuthController {
     ) {
         authCommandService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
+      
+    @Operation(summary = "샘물 인증", description = "사용자로부터 샘물 아이디 비밀번호를 입력받아 동아리 회원인지 인증")
+    @PostMapping()
+    public CustomResponse<AuthResDto.SmulResDto> authenticate(AuthReqDto.SmulReqDto smulReqDto) {
+        return CustomResponse.onSuccess(authCommandService.authenticate(smulReqDto));
     }
 }
