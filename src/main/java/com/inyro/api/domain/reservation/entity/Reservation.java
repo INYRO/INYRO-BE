@@ -20,16 +20,22 @@ public class Reservation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "participant_list", nullable = false)
     private String participantList;
 
+    @Column(name = "purpose", nullable = false)
     private String purpose;
 
+    @Column(name = "date", nullable = false)
     private LocalDate date;
 
+    @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
 
+    @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
+    private Status status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

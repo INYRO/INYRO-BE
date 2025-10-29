@@ -4,6 +4,7 @@ import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.reservation.dto.request.ReservationReqDto;
 import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
 import com.inyro.api.domain.reservation.entity.Reservation;
+import com.inyro.api.domain.reservation.entity.Status;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -24,6 +25,7 @@ public class ReservationConverter {
                 .date(reservationCreateReqDTO.date())
                 .startTime(start)
                 .endTime(end)
+                .status(Status.UPCOMING)
                 .member(member)
                 .build();
     }
