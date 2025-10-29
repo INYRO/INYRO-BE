@@ -19,11 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.inyro.api.domain.auth.dto.response.AuthResDto;
-import com.inyro.api.domain.auth.exception.AuthErrorCode;
-import com.inyro.api.domain.auth.exception.AuthException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.http.MediaType;
@@ -47,6 +42,10 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
+    private final WebClient clubWebClient;
+
+    private static final String LOGIN_URL = "https://smsso.smu.ac.kr/Login.do";
+    private static final String BASE_URL = "https://smul.smu.ac.kr";
 
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
@@ -100,7 +99,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto) {
+    public void resetPasswordWithCode(String passwordTokenHeader, AuthReqDto.AuthPasswordResetWithCodeReqDTO passwordResetWithCodeRequestDto) {
 //        final String uuid = passwordTokenHeader.replace("PasswordToken ", "").trim();
 //        log.info("헤더다 : {}", passwordTokenHeader);
 //        final String redisKey = "password_token : " + uuid;
@@ -124,11 +123,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 //        authRepository.save(auth);
 //
 //        mailService.sendPasswordChangeNotification(email);
-    private static final String LOGIN_URL = "https://smsso.smu.ac.kr/Login.do";
-    private static final String BASE_URL = "https://smul.smu.ac.kr";
-
-    private final WebClient clubWebClient;
-
+    }
     @Override
     public AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto) {
         String cookieHeader = getCookieHeader(smulReqDto);
@@ -152,7 +147,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                     .execute()
                     .cookies();
         } catch (IOException e) {
-            throw new AuthException(AuthErrorCode.AUTH_INTERNAL_SERVER_ERROR);
+            throw new AuthException(AuthErrorCode.SMUL_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -171,7 +166,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                 .bodyToMono(AuthResDto.ClubInfoDto.class)
                 .block();
         if (responseBody == null) {
-            throw new AuthException(AuthErrorCode.AUTH_INTERNAL_SERVER_ERROR);
+            throw new AuthException(AuthErrorCode.SMUL_INTERNAL_SERVER_ERROR);
         }
         return responseBody.dsClubAplyList().stream()
                 .filter(info -> info.INDPT_ORG_NM().equals("이니로(INYRO)"))
@@ -194,7 +189,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                 .bodyToMono(AuthResDto.DeptInfoDto.class)
                 .block();
         if (responseBody == null) {
-            throw new AuthException(AuthErrorCode.AUTH_INTERNAL_SERVER_ERROR);
+            throw new AuthException(AuthErrorCode.SMUL_INTERNAL_SERVER_ERROR);
         }
         return responseBody.dsStdInfoList().get(0);
     }

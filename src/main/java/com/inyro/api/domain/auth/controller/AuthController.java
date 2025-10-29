@@ -74,11 +74,12 @@ public class AuthController {
     @PostMapping("/password/reset/code")
     public CustomResponse<String> resetPasswordWithCode(
             @RequestHeader("PasswordToken") String passwordTokenHeader,
-            @RequestBody AuthReqDto.PasswordResetWithCodeRequestDto passwordResetWithCodeRequestDto
+            @RequestBody AuthReqDto.AuthPasswordResetWithCodeReqDTO passwordResetWithCodeRequestDto
     ) {
         authCommandService.resetPasswordWithCode(passwordTokenHeader, passwordResetWithCodeRequestDto);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
-      
+    }
+
     @Operation(summary = "샘물 인증", description = "사용자로부터 샘물 아이디 비밀번호를 입력받아 동아리 회원인지 인증")
     @PostMapping()
     public CustomResponse<AuthResDto.SmulResDto> authenticate(AuthReqDto.SmulReqDto smulReqDto) {
