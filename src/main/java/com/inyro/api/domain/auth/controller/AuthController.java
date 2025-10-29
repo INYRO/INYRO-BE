@@ -1,7 +1,6 @@
 package com.inyro.api.domain.auth.controller;
 
 import com.inyro.api.domain.auth.dto.request.AuthReqDto;
-import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
@@ -15,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.SignatureException;
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +23,7 @@ public class AuthController {
 
     private final AuthCommandService authCommandService;
 
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public CustomResponse<String> signUp(@RequestBody AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
         authCommandService.signUp(authSignUpReqDTO);
@@ -35,27 +33,21 @@ public class AuthController {
     //토큰 재발급 API
     @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
-    public CustomResponse<?> reissue(
-            @RequestBody JwtDto jwtDto
-    ) throws SignatureException {
-
+    public CustomResponse<?> reissue(@RequestBody JwtDto jwtDto) {
         log.info("[ Auth Controller ] 토큰을 재발급합니다. ");
-
         return CustomResponse.onSuccess(authCommandService.reissueToken(jwtDto));
     }
 
-    @Operation(summary = "login", description = "이메일과 비밀번호로 로그인을 해 jwt 토큰을 받는다.")
+    @Operation(summary = "로그인")
     @PostMapping("/login")
-    public CustomResponse<?> login(
-            @RequestBody AuthReqDto.LoginRequestDto memberLoginRequestDto
-    ) {
-        return null;
+    public CustomResponse<?> login(@RequestBody AuthReqDto.AuthLoginReqDTO authLoginReqDTO) {
+        throw new UnsupportedOperationException("이 API는 Swagger 문서용입니다.");
     }
 
-    @Operation(summary = "logout", description = "현재 jwt 토큰을 블랙리스트로 등록해 사용 불가하게 만든다.")
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public CustomResponse<?> logout() {
-        return null;
+        throw new UnsupportedOperationException("이 API는 Swagger 문서용입니다.");
     }
 
     @Operation(summary = "비밀번호 변경", description = "현재 비밀번호와 바꿀 비밀번호를 입력해 비밀번호를 변경한다.")

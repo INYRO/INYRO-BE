@@ -16,7 +16,7 @@ public class AuthReqDto {
     ){}
 
     @Builder
-    public record LoginRequestDto(
+    public record AuthLoginReqDTO(
             String sno,
             String password
     ) {

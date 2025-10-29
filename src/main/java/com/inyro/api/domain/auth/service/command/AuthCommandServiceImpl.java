@@ -34,7 +34,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.major());
 
         String password = passwordEncoder.encode(authSignUpReqDTO.password());
-        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, password, member.getId());
+        Auth auth = AuthConverter.toAuth(authSignUpReqDTO, password, member);
 
         member.linkAuth(auth);
     }
