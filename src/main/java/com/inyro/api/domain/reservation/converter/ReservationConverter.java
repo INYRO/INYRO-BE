@@ -27,8 +27,8 @@ public class ReservationConverter {
         return ReservationResDto.ReservationCreateResDTO.builder()
                 .reservationId(reservationId)
                 .reservationName(reservationName)
-                .startTime(start)
-                .endTime(end)
+                .startTime(String.valueOf(start))
+                .endTime(String.valueOf(end))
                 .build();
     }
 }

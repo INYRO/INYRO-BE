@@ -10,7 +10,7 @@ public class ReservationResDto {
     public record ReservationCreateResDTO(
             Long reservationId,
             String reservationName,
-            LocalTime startTime,
-            LocalTime endTime
+            String startTime,
+            String endTime
     ){}
 }
