@@ -25,7 +25,9 @@ public class AuthController {
 
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
-    public CustomResponse<String> signUp(@RequestBody AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
+    public CustomResponse<String> signUp(
+            @Valid @RequestBody AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO
+    ) {
         authCommandService.signUp(authSignUpReqDTO);
         return CustomResponse.onSuccess("회원가입 성공");
     }
@@ -54,10 +56,10 @@ public class AuthController {
     @PostMapping("/password/reset")
     public CustomResponse<String> resetPassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody @Valid AuthReqDto.PasswordResetRequestDto passwordResetRequestDto
+            @Valid @RequestBody AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO
     ) {
-        authCommandService.resetPassword(customUserDetails.getUsername(), passwordResetRequestDto);
-        return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호가 변경되었습니다.");
+        authCommandService.resetPassword(customUserDetails.getUsername(), authPasswordResetReqDTO);
+        return CustomResponse.onSuccess("비밀번호가 변경되었습니다.");
     }
 
     @Operation(summary = "비밀번호 재설정 (잃어버렸으르 때)", description = "메일 인증 코드 확인으로 발급된 토큰")

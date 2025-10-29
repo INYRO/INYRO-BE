@@ -10,7 +10,6 @@ import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
-import com.inyro.api.domain.member.validator.MemberValidator;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
@@ -35,7 +34,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
-        memberValidator.validateDuplicateSno(authSignUpReqDTO.sno());
         if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
             throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
         }
@@ -76,27 +74,13 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void resetPassword(String sno, AuthReqDto.PasswordResetRequestDto passwordResetRequestDto) {
+    public void resetPassword(String sno, AuthReqDto.AuthPasswordResetReqDTO authPasswordResetReqDTO) {
+        Member member = memberRepository.findBySno(sno)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-//        if (!passwordResetRequestDto.newPassword().equals(passwordResetRequestDto.newPasswordConfirmation())) {
-//            throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
-//        }
-//
-//        Member member = memberRepository.findByEmail(sno)
-//                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-//
-//        Auth auth = member.getAuth();
-//
-//        if (!passwordEncoder.matches(passwordResetRequestDto.currentPassword(), auth.getPassword())) {
-//            throw new AuthException(AuthErrorCode.CURRENT_PASSWORD_DOES_NOT_MATCH);
-//        }
-//        if (passwordEncoder.matches(passwordResetRequestDto.newPassword(), auth.getPassword())) {
-//            throw new AuthException(AuthErrorCode.NEW_PASSWORD_IS_CURRENT_PASSWORD);
-//        }
-//
-//        auth.updatePassword(passwordEncoder.encode(passwordResetRequestDto.newPassword()));
-//        authRepository.save(auth);
-
+        Auth auth = member.getAuth();
+        auth.validateNotSamePassword(authPasswordResetReqDTO.newPassword(), passwordEncoder);
+        auth.resetPassword(passwordEncoder.encode(authPasswordResetReqDTO.newPassword()));
     }
 
     @Override

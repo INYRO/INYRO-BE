@@ -1,9 +1,12 @@
 package com.inyro.api.domain.auth.entity;
 
+import com.inyro.api.domain.auth.exception.AuthErrorCode;
+import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Getter
@@ -30,4 +33,13 @@ public class Auth extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public void validateNotSamePassword(String newPassword, PasswordEncoder encoder) {
+        if (encoder.matches(newPassword, this.password)) {
+            throw new AuthException(AuthErrorCode.NEW_PASSWORD_IS_CURRENT_PASSWORD);
+        }
+    }
+
+    public void resetPassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }
