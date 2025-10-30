@@ -2,6 +2,7 @@ package com.inyro.api.domain.auth.dto.request;
 
 import com.inyro.api.domain.auth.validator.PasswordMatches;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 
@@ -27,7 +28,7 @@ public class AuthReqDto {
             @NotBlank(message = BLANK_NAME)
             String name,
 
-            @NotBlank(message = BLANK_ENROLLED)
+            @NotNull(message = BLANK_ENROLLED)
             Boolean enrolled
     ){}
 
