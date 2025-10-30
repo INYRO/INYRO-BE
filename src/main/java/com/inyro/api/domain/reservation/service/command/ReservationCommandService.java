@@ -11,4 +11,6 @@ public interface ReservationCommandService {
     ReservationResDto.ReservationDeleteResDTO deleteReservation(Long reservationId, String sno);
 
     void updateExpiredReservations();
+
+    ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO);
 }

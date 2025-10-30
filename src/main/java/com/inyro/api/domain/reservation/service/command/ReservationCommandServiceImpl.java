@@ -13,6 +13,7 @@ import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
 import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import com.inyro.api.domain.reservation.validator.ReservationValidator;
+import com.inyro.api.global.utils.RedisUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,6 +33,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationValidator reservationValidator;
+    private final RedisUtils<String, String> redisUtils;
 
     @Override
     public ReservationResDto.ReservationCreateResDTO createReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
@@ -38,7 +41,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         LocalTime end = reservationCreateReqDTO.timeSlots().get(reservationCreateReqDTO.timeSlots().size() - 1).plusMinutes(30);
         reservationValidator.validateTimeRange(start, end); // 범위 검증
 
-        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)){
+        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
 
@@ -74,7 +77,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         Member member = memberRepository.findBySno(sno)
-                        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         reservation.validateOwner(member.getId());
         reservationRepository.delete(reservation);
@@ -92,5 +95,14 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             return;
         }
         reservations.forEach(Reservation::completeReservation);
+    }
+
+    @Override
+    public ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        boolean success = redisUtils.lock(reservationTimeReqDTO.date() + ":" + reservationTimeReqDTO.time(), sno, 300L, TimeUnit.SECONDS);
+        if (!success) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+        }
+        return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
     }
 }

@@ -74,4 +74,11 @@ public class ReservationConverter {
                 .reservationStatus(reservation.getReservationStatus())
                 .build();
     }
+
+    public static ReservationResDto.ReservationTimeResDto toReservationTimeResDTO(ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        return ReservationResDto.ReservationTimeResDto.builder()
+                .date(reservationTimeReqDTO.date())
+                .time(reservationTimeReqDTO.time())
+                .build();
+    }
 }

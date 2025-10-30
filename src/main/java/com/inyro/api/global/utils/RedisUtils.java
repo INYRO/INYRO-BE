@@ -28,4 +28,8 @@ public class RedisUtils<K, V> {
     public void delete(K key) {
         redisTemplate.delete(key);
     }
+
+    public boolean lock(K key, V val, Long time, TimeUnit timeUnit) {
+        return Objects.equals(Boolean.TRUE, redisTemplate.opsForValue().setIfAbsent(key, val, time, timeUnit));
+    }
 }

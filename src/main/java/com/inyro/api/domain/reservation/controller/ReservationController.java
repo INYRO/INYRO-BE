@@ -9,11 +9,8 @@ import com.inyro.api.global.apiPayload.PageResponse;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -73,5 +70,14 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable("reservationId") Long reservationId){
         return CustomResponse.onSuccess(reservationCommandService.deleteReservation(reservationId, customUserDetails.getUsername()));
+    }
+
+    @Operation(summary = "시간 점유")
+    @PostMapping("/time")
+    public CustomResponse<ReservationResDto.ReservationTimeResDto> lockTime(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ReservationReqDto.ReservationTimeReqDto reservationTimeReqDto
+    ) {
+        return CustomResponse.onSuccess(reservationCommandService.lockTime(customUserDetails.getUsername(), reservationTimeReqDto));
     }
 }

@@ -34,4 +34,10 @@ public class ReservationReqDto {
             @NotBlank(message = BLANK_TIME_SLOTS)
             List<LocalTime> timeSlots
     ){}
+
+    public record ReservationTimeReqDto(
+            LocalDate date,
+            LocalTime time
+    ) {
+    }
 }
