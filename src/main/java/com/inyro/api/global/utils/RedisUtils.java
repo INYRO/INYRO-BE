@@ -9,23 +9,23 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class RedisUtils<T> {
+public class RedisUtils<K, V> {
 
-    private final RedisTemplate<String, T> redisTemplate;
+    private final RedisTemplate<K, V> redisTemplate;
 
-    public void save(String key, T val, Long time, TimeUnit timeUnit) {
+    public void save(K key, V val, Long time, TimeUnit timeUnit) {
         redisTemplate.opsForValue().set(key, val, time, timeUnit);
     }
 
-    public boolean hasKey(String key) {
+    public boolean hasKey(K key) {
         return Objects.equals(Boolean.TRUE, redisTemplate.hasKey(key));
     }
 
-    public T get(String key) {
+    public V get(K key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    public void delete(String key) {
+    public void delete(K key) {
         redisTemplate.delete(key);
     }
 }
