@@ -60,7 +60,7 @@ public class CustomUserDetails implements UserDetails {
     // 활성화가 되어있는지?
     @Override
     public boolean isEnabled() {
-        // User Entity 에서 Status 가져온 후 true? false? 검사
+        // User Entity 에서 ReservationStatus 가져온 후 true? false? 검사
         return true;
     }
 }

@@ -4,7 +4,7 @@ import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.reservation.dto.request.ReservationReqDto;
 import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
 import com.inyro.api.domain.reservation.entity.Reservation;
-import com.inyro.api.domain.reservation.entity.Status;
+import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -25,7 +25,7 @@ public class ReservationConverter {
                 .date(reservationCreateReqDTO.date())
                 .startTime(start)
                 .endTime(end)
-                .status(Status.UPCOMING)
+                .reservationStatus(ReservationStatus.UPCOMING)
                 .member(member)
                 .build();
     }
@@ -65,6 +65,16 @@ public class ReservationConverter {
         return ReservationResDto.ReservationDeleteResDTO.builder()
                 .reservationId(reservationId)
                 .message("예약이 취소되었습니다.")
+                .build();
+    }
+
+    public static ReservationResDto.ReservationResDTO toReservationResDTO(Reservation reservation) {
+        return  ReservationResDto.ReservationResDTO.builder()
+                .reservationId(reservation.getId())
+                .date(String.valueOf(reservation.getDate()))
+                .startTime(String.valueOf(reservation.getStartTime()))
+                .endTime(String.valueOf(reservation.getEndTime()))
+                .reservationStatus(reservation.getReservationStatus())
                 .build();
     }
 }

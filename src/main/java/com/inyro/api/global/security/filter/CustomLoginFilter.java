@@ -104,7 +104,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //JSON 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(HttpStatus.OK.value()); //Response 의 Status 를 200으로 설정
+        response.setStatus(HttpStatus.OK.value()); //Response 의 ReservationStatus 를 200으로 설정
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
 

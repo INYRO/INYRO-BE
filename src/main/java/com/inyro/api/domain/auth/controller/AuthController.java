@@ -84,4 +84,5 @@ public class AuthController {
     ) {
         return CustomResponse.onSuccess(authCommandService.authenticate(smulReqDto));
     }
+
 }
