@@ -8,11 +8,6 @@ import java.util.List;
 
 public class MemberResDto {
 
-    public record AllMemberDetailsResDto(
-            List<AdminResDto.UserDetailResDto> userDetails
-    ) {
-    }
-
     @Builder
     public record MemberDetailResDto(
             String sno,

@@ -38,7 +38,7 @@ public class Reservation extends BaseEntity {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    private Status status;
+    private ReservationStatus reservationStatus;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

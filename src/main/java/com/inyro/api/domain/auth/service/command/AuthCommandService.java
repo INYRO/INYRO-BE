@@ -14,7 +14,7 @@ public interface AuthCommandService {
 
     void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO);
   
-    void resetPasswordByVerification(AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO);
+    //void resetPasswordByVerification(AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO);
   
     AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto);
 }
