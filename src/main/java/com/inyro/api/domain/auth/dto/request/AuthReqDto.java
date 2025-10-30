@@ -8,6 +8,7 @@ import lombok.Builder;
 
 public class AuthReqDto {
 
+
     public record AuthSignUpReqDTO(
             @NotBlank
             String sno,
@@ -15,7 +16,7 @@ public class AuthReqDto {
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String password,
             @NotBlank
-            String major,
+            String dept,
             @NotBlank
             String name,
             Boolean enrolled
@@ -31,7 +32,7 @@ public class AuthReqDto {
     }
 
     @PasswordMatches
-    public record AuthPasswordResetReqDTO(
+    public record PasswordChangeReqDTO(
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,
@@ -41,13 +42,21 @@ public class AuthReqDto {
     ) {
     }
 
-    public record AuthPasswordResetWithCodeReqDTO(
+    public record PasswordResetReqDTO(
+            @NotBlank(message = "학번 입력은 필수입니다.")
+            String sno,
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPassword,
             @NotBlank
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String newPasswordConfirmation
+    ) {
+    }
+  
+    public record SmulReqDto(
+            String sno,
+            String password
     ) {
     }
 }
