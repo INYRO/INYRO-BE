@@ -1,7 +1,7 @@
 package com.inyro.api.domain.auth.dto.request;
 
 import com.inyro.api.domain.auth.validator.PasswordMatches;
-import com.inyro.api.global.security.utils.PasswordPattern;
+import com.inyro.api.global.constant.PasswordPattern;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;

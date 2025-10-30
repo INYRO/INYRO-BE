@@ -1,4 +1,4 @@
-package com.inyro.api.global.security.utils;
+package com.inyro.api.global.constant;
 
 
 public class PasswordPattern {
