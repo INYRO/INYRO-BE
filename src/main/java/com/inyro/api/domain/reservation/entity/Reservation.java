@@ -57,4 +57,8 @@ public class Reservation extends BaseEntity {
             this.endTime = timeSlots.get(timeSlots.size() - 1).plusMinutes(30);
         }
     }
+
+    public void completeReservation() {
+        this.reservationStatus = ReservationStatus.COMPLETED;
+    }
 }

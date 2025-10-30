@@ -1,6 +1,7 @@
 package com.inyro.api.domain.reservation.repository;
 
 import com.inyro.api.domain.reservation.entity.Reservation;
+import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +52,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>{
         WHERE m.sno = :sno
     """)
     Page<Reservation> findAllBySno(@Param("sno")String sno, Pageable pageable);
-}
+
+    @Query("""
+    SELECT r
+    FROM Reservation r
+    WHERE r.date = :date
+      AND r.reservationStatus = :status
+      AND r.endTime < :time
+    """)
+    List<Reservation> findAllByDateAndStatusBeforeEndTime(
+            @Param("date") LocalDate date,
+            @Param("status") ReservationStatus status,
+            @Param("time") LocalTime time
+    );}

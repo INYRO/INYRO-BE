@@ -8,6 +8,7 @@ import com.inyro.api.domain.reservation.converter.ReservationConverter;
 import com.inyro.api.domain.reservation.dto.request.ReservationReqDto;
 import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
 import com.inyro.api.domain.reservation.entity.Reservation;
+import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
 import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
@@ -17,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -76,5 +79,18 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         reservation.validateOwner(member.getId());
         reservationRepository.delete(reservation);
         return ReservationConverter.toReservationDeleteResDTO(reservationId);
+    }
+
+    @Override
+    public void updateExpiredReservations() {
+        LocalDate date = LocalDate.now();
+        LocalTime time = LocalTime.now();
+        List<Reservation> reservations = reservationRepository.findAllByDateAndStatusBeforeEndTime(date, ReservationStatus.UPCOMING, time);
+
+        if (reservations.isEmpty()) {
+            log.info("[ReservationService] 만료된 예약 없음");
+            return;
+        }
+        reservations.forEach(Reservation::completeReservation);
     }
 }
