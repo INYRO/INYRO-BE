@@ -74,4 +74,14 @@ public class AdminController {
     ) {
         return CustomResponse.onSuccess(adminService.getReservation(reservationId));
     }
+
+    @Operation(summary = "관리자 예약 삭제")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/reservations/{reservationId}")
+    public CustomResponse<String> deleteReservation(
+            @PathVariable long reservationId
+    ) {
+        adminService.deleteReservation(reservationId);
+        return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "예약 삭제 완료");
+    }
 }

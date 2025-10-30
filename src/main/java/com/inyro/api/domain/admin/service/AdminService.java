@@ -18,4 +18,6 @@ public interface AdminService {
     AdminResDto.ReservationsDetailsResDto getReservations();
 
     AdminResDto.ReservationDetailResDto getReservation(long reservationId);
+
+    void deleteReservation(long reservationId);
 }

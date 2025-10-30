@@ -73,4 +73,12 @@ public class AdminServiceImpl implements AdminService {
 
         return AdminConverter.toReservationDetailResDto(reservation);
     }
+
+    @Override
+    public void deleteReservation(long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+        reservationRepository.delete(reservation);
+    }
 }
