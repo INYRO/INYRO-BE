@@ -49,7 +49,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
         Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, start, end, member);
         reservationRepository.save(reservation);
-        deleteTimeLock(start, end, date);
+        deleteTimeLock(start, end, date);   // 락 해제
 
         return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), start, end);
     }
@@ -100,17 +100,21 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        // 락을 생성하기 전에 이미 예약된 시간에 락을 거는지 확인 (일반적인 사용으로는 불가하나 악의적 접근 방어)
         if (reservationRepository.existsByDateAndTimeSlots(reservationTimeReqDTO.date(), reservationTimeReqDTO.time())) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
+        // 해당 날짜+시간에 대한 락 생성
         boolean success = redisUtils.lock(reservationTimeReqDTO.date() + ":" + reservationTimeReqDTO.time(), sno, 300L, TimeUnit.SECONDS);
         if (!success) {
+            // 락이 이미 있는 경우 409
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
         return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
     }
 
     private void deleteTimeLock(LocalTime start, LocalTime end, LocalDate date) {
+        // 예약 완료 후 시작부터 끝까지 락 해제
         while(start.isBefore(end)) {
             redisUtils.delete(date + ":" + start);
             start = start.plusMinutes(30);

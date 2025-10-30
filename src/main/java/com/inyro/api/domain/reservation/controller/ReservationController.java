@@ -28,7 +28,7 @@ public class ReservationController {
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
 
-    @Operation(summary = "예약 생성")
+    @Operation(summary = "예약 생성", description = "락을 획득하지 않은 시간에 대한 예약 불가")
     @PostMapping()
     public CustomResponse<ReservationResDto.ReservationCreateResDTO> createReservation(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -72,7 +72,7 @@ public class ReservationController {
         return CustomResponse.onSuccess(reservationCommandService.deleteReservation(reservationId, customUserDetails.getUsername()));
     }
 
-    @Operation(summary = "시간 점유")
+    @Operation(summary = "시간 점유", description = "단일 시간에 대해서 락을 획득해 예약이 완료될 때까지 또는 5분 동안 접근 제한")
     @PostMapping("/time")
     public CustomResponse<ReservationResDto.ReservationTimeResDto> lockTime(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
