@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -48,4 +49,12 @@ public class Reservation extends BaseEntity {
         }
     }
 
+    public void updateReservation(String participantList, String purpose, List<LocalTime> timeSlots){
+        if (participantList != null) this.participantList = participantList;
+        if (purpose != null) this.purpose = purpose;
+        if (timeSlots != null && !timeSlots.isEmpty()) {
+            this.startTime = timeSlots.get(0);
+            this.endTime = timeSlots.get(timeSlots.size() - 1).plusMinutes(30);
+        }
+    }
 }

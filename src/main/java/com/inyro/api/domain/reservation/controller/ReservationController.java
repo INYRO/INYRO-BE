@@ -38,6 +38,17 @@ public class ReservationController {
         return CustomResponse.onSuccess(reservationQueryService.getAvailableReservation(date));
     }
 
+    @Operation(summary = "예약 수정")
+    @PatchMapping("/{reservationId}")
+    public CustomResponse<ReservationResDto.ReservationUpdateResDTO> updateReservation(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PathVariable("reservationId") Long reservationId,
+            @RequestBody ReservationReqDto.ReservationUpdateReqDTO reservationUpdateReqDTO
+            ){
+        return CustomResponse.onSuccess(reservationCommandService.updateReservation(reservationId, reservationUpdateReqDTO, customUserDetails.getUsername()));
+    }
+
+
     @Operation(summary = "예약 삭제")
     @DeleteMapping("/{reservationId}")
     public CustomResponse<ReservationResDto.ReservationDeleteResDTO> deleteReservation(

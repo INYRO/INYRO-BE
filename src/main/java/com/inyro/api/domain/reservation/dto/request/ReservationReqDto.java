@@ -12,4 +12,10 @@ public class ReservationReqDto {
             String purpose,
             List<LocalTime> timeSlots
     ){}
+
+    public record ReservationUpdateReqDTO(
+            String participantList,
+            String purpose,
+            List<LocalTime> timeSlots
+    ){}
 }

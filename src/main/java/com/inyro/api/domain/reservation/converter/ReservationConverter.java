@@ -30,10 +30,11 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationCreateResDTO toReservationCreateResDTO(Long reservationId, String reservationName, LocalTime start, LocalTime end) {
+    public static ReservationResDto.ReservationCreateResDTO toReservationCreateResDTO(Long reservationId, String reservationName, LocalDate date, LocalTime start, LocalTime end) {
         return ReservationResDto.ReservationCreateResDTO.builder()
                 .reservationId(reservationId)
                 .reservationName(reservationName)
+                .date(String.valueOf(date))
                 .startTime(String.valueOf(start))
                 .endTime(String.valueOf(end))
                 .build();
@@ -46,6 +47,17 @@ public class ReservationConverter {
         return  ReservationResDto.ReservationAvailableResDTO.builder()
                 .date(date)
                 .availableSlots(formatted)
+                .build();
+    }
+
+    public static ReservationResDto.ReservationUpdateResDTO toReservationUpdateResDTO(Reservation reservation) {
+        return ReservationResDto.ReservationUpdateResDTO.builder()
+                .reservationId(reservation.getId())
+                .date(String.valueOf(reservation.getDate()))
+                .participantList(reservation.getParticipantList())
+                .purpose(reservation.getPurpose())
+                .startTime(String.valueOf(reservation.getStartTime()))
+                .endTime(String.valueOf(reservation.getEndTime()))
                 .build();
     }
 

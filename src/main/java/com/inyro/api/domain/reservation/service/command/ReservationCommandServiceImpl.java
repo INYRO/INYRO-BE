@@ -44,7 +44,26 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
         Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, start, end, member);
         reservationRepository.save(reservation);
-        return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), start, end);
+        return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), start, end);
+    }
+
+    @Override
+    public ReservationResDto.ReservationUpdateResDTO updateReservation(Long reservationId, ReservationReqDto.ReservationUpdateReqDTO reservationUpdateReqDTO, String sno) {
+        Reservation reservation = reservationRepository.findByIdAndSno(reservationId, sno)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        if (reservationUpdateReqDTO.timeSlots() != null && !reservationUpdateReqDTO.timeSlots().isEmpty()) {
+            LocalTime start = reservationUpdateReqDTO.timeSlots().get(0);
+            LocalTime end = reservationUpdateReqDTO.timeSlots().get(reservationUpdateReqDTO.timeSlots().size() - 1).plusMinutes(30);
+            reservationValidator.validateTimeRange(start, end);
+
+            // 자기 자신 제외한 중복 체크
+            if (reservationRepository.existsByDateAndTimeSlotsAndIdNot(reservation.getDate(), start, end, reservation.getId())) {
+                throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+            }
+        }
+
+        reservation.updateReservation(reservationUpdateReqDTO.participantList(), reservationUpdateReqDTO.purpose(), reservationUpdateReqDTO.timeSlots());
+        return ReservationConverter.toReservationUpdateResDTO(reservation);
     }
 
     @Override
