@@ -42,7 +42,9 @@ public class ReservationController {
 
     @Operation(summary = "예약 가능한 시간대 조회")
     @GetMapping("/available")
-    public CustomResponse<ReservationResDto.ReservationAvailableResDTO> getAvailableReservations(@RequestParam LocalDate date){
+    public CustomResponse<ReservationResDto.ReservationAvailableResDTO> getAvailableReservations(
+            @RequestParam LocalDate date
+    ){
         return CustomResponse.onSuccess(reservationQueryService.getAvailableReservation(date));
     }
 
