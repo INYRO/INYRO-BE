@@ -9,11 +9,8 @@ import com.inyro.api.global.apiPayload.PageResponse;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,7 +28,7 @@ public class ReservationController {
     private final ReservationCommandService reservationCommandService;
     private final ReservationQueryService reservationQueryService;
 
-    @Operation(summary = "예약 생성")
+    @Operation(summary = "예약 생성", description = "락을 획득하지 않은 시간에 대한 예약 불가")
     @PostMapping()
     public CustomResponse<ReservationResDto.ReservationCreateResDTO> createReservation(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -42,7 +39,9 @@ public class ReservationController {
 
     @Operation(summary = "예약 가능한 시간대 조회")
     @GetMapping("/available")
-    public CustomResponse<ReservationResDto.ReservationAvailableResDTO> getAvailableReservations(@RequestParam LocalDate date){
+    public CustomResponse<ReservationResDto.ReservationAvailableResDTO> getAvailableReservations(
+            @RequestParam LocalDate date
+    ){
         return CustomResponse.onSuccess(reservationQueryService.getAvailableReservation(date));
     }
 
@@ -71,5 +70,14 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable("reservationId") Long reservationId){
         return CustomResponse.onSuccess(reservationCommandService.deleteReservation(reservationId, customUserDetails.getUsername()));
+    }
+
+    @Operation(summary = "시간 점유", description = "단일 시간에 대해서 락을 획득해 예약이 완료될 때까지 또는 5분 동안 접근 제한")
+    @PostMapping("/time")
+    public CustomResponse<ReservationResDto.ReservationTimeResDto> lockTime(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ReservationReqDto.ReservationTimeReqDto reservationTimeReqDto
+    ) {
+        return CustomResponse.onSuccess(reservationCommandService.lockTime(customUserDetails.getUsername(), reservationTimeReqDto));
     }
 }

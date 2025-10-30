@@ -4,7 +4,9 @@ import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 public class ReservationResDto {
 
@@ -20,7 +22,7 @@ public class ReservationResDto {
     @Builder
     public record ReservationAvailableResDTO (
             LocalDate date,
-            List<String> availableSlots
+            Map<LocalTime, Boolean> available
     ){}
 
     @Builder
@@ -47,4 +49,11 @@ public class ReservationResDto {
             Long reservationId,
             String message
     ){}
+
+    @Builder
+    public record ReservationTimeResDto(
+            LocalDate date,
+            LocalTime time
+    ) {
+    }
 }

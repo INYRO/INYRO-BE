@@ -45,7 +45,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
     private final WebClient clubWebClient;
-    private final RedisUtils<String> redisUtils;
+    private final RedisUtils<String, String> redisUtils;
 
     private static final String LOGIN_URL = "https://smsso.smu.ac.kr/Login.do";
     private static final String BASE_URL = "https://smul.smu.ac.kr";

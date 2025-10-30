@@ -13,6 +13,7 @@ import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
 import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import com.inyro.api.domain.reservation.validator.ReservationValidator;
+import com.inyro.api.global.utils.RedisUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -31,22 +33,24 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     private final MemberRepository memberRepository;
     private final ReservationRepository reservationRepository;
     private final ReservationValidator reservationValidator;
+    private final RedisUtils<String, String> redisUtils;
 
     @Override
     public ReservationResDto.ReservationCreateResDTO createReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
+        LocalDate date =  reservationCreateReqDTO.date();
         LocalTime start = reservationCreateReqDTO.timeSlots().get(0);
         LocalTime end = reservationCreateReqDTO.timeSlots().get(reservationCreateReqDTO.timeSlots().size() - 1).plusMinutes(30);
-        reservationValidator.validateTimeRange(start, end); // 범위 검증
 
-        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)){
-            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
-        }
+        reservationValidator.validateTimeRange(start, end); // 범위 검증
+        reservationValidator.validateTimeLock(date, start, end, sno);   // 락 검증
 
         Member member = memberRepository.findBySno(sno)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, start, end, member);
         reservationRepository.save(reservation);
+        deleteTimeLock(start, end, date);   // 락 해제
+
         return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), start, end);
     }
 
@@ -74,7 +78,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         Member member = memberRepository.findBySno(sno)
-                        .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         reservation.validateOwner(member.getId());
         reservationRepository.delete(reservation);
@@ -92,5 +96,28 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             return;
         }
         reservations.forEach(Reservation::completeReservation);
+    }
+
+    @Override
+    public ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        // 락을 생성하기 전에 이미 예약된 시간에 락을 거는지 확인 (일반적인 사용으로는 불가하나 악의적 접근 방어)
+        if (reservationRepository.existsByDateAndTimeSlots(reservationTimeReqDTO.date(), reservationTimeReqDTO.time())) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+        }
+        // 해당 날짜+시간에 대한 락 생성
+        boolean success = redisUtils.lock(reservationTimeReqDTO.date() + ":" + reservationTimeReqDTO.time(), sno, 300L, TimeUnit.SECONDS);
+        if (!success) {
+            // 락이 이미 있는 경우 409
+            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+        }
+        return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
+    }
+
+    private void deleteTimeLock(LocalTime start, LocalTime end, LocalDate date) {
+        // 예약 완료 후 시작부터 끝까지 락 해제
+        while(start.isBefore(end)) {
+            redisUtils.delete(date + ":" + start);
+            start = start.plusMinutes(30);
+        }
     }
 }

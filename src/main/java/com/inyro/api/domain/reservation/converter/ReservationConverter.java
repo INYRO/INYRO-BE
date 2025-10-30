@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReservationConverter {
@@ -40,13 +40,10 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, List<LocalTime> availableSlots) {
-        List<String> formatted = availableSlots.stream()
-                .map(t -> t.format(TIME_FORMATTER))
-                .toList();
+    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, Map<LocalTime, Boolean> availableSlots) {
         return  ReservationResDto.ReservationAvailableResDTO.builder()
                 .date(date)
-                .availableSlots(formatted)
+                .available(availableSlots)
                 .build();
     }
 
@@ -75,6 +72,13 @@ public class ReservationConverter {
                 .startTime(String.valueOf(reservation.getStartTime()))
                 .endTime(String.valueOf(reservation.getEndTime()))
                 .reservationStatus(reservation.getReservationStatus())
+                .build();
+    }
+
+    public static ReservationResDto.ReservationTimeResDto toReservationTimeResDTO(ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        return ReservationResDto.ReservationTimeResDto.builder()
+                .date(reservationTimeReqDTO.date())
+                .time(reservationTimeReqDTO.time())
                 .build();
     }
 }

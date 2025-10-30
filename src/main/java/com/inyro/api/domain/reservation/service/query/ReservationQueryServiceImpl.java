@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -27,7 +27,7 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
 
     @Override
     public ReservationResDto.ReservationAvailableResDTO getAvailableReservation(LocalDate date) {
-        List<LocalTime> available = reservationCalculator.calculateAvailableSlots(date);
+        Map<LocalTime, Boolean> available = reservationCalculator.calculateAvailableSlots(date);
         return ReservationConverter.toReservationAvailableResDTO(date, available);
     }
 
