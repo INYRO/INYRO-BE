@@ -44,10 +44,6 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         reservationValidator.validateTimeRange(start, end); // 범위 검증
         reservationValidator.validateTimeLock(date, start, end, sno);   // 락 검증
 
-//        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)) {
-//            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
-//        }
-
         Member member = memberRepository.findBySno(sno)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -104,6 +100,9 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+        if (reservationRepository.existsByDateAndTimeSlots(reservationTimeReqDTO.date(), reservationTimeReqDTO.time())) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+        }
         boolean success = redisUtils.lock(reservationTimeReqDTO.date() + ":" + reservationTimeReqDTO.time(), sno, 300L, TimeUnit.SECONDS);
         if (!success) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
