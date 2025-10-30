@@ -68,14 +68,7 @@ public class AuthController {
         return CustomResponse.onSuccess("비밀번호가 변경되었습니다.");
     }
 
-    @Operation(summary = "비밀번호 찾기 (잃어버렸으르 때)")
-    @PostMapping("/password/reset/code")
-    public CustomResponse<String> FindPassword(
-            @RequestBody AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO
-    ) {
-        authCommandService.resetPasswordByVerification(authPasswordResetWithCodeReqDTO);
-
-    @Operation(summary = "비밀번호 재설정 (잃어버렸으르 때)", description = "메일 인증 코드 확인으로 발급된 토큰")
+    @Operation(summary = "비밀번호 재설정 (잃어버렸으르 때)", description = "샘물 인증 확인 후 진행")
     @PostMapping("/password/reset/smul")
     public CustomResponse<String> resetPassword(
             @RequestBody AuthReqDto.PasswordResetReqDTO passwordResetReqDTO
