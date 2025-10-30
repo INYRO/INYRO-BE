@@ -25,7 +25,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @Operation(summary = "관리자 유저 목록 조회")
+    @Operation(summary = "관리자 멤버 목록 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
     public CustomResponse<PageResponse<AdminResDto.MemberDetailResDto>> getAllUsers(
@@ -48,7 +48,7 @@ public class AdminController {
         return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "유저 삭제 완료");
     }
 
-    @Operation(summary = "관리자 유저 속성 변경")
+    @Operation(summary = "관리자 멤버 속성 변경")
     //    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/members/{memberId}/status")
     public CustomResponse<String> changeMemberStatus(
