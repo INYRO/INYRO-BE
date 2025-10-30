@@ -28,10 +28,11 @@ public class AdminResDto {
     public record ReservationDetailResDto(
             long memberId,
             long reservationId,
-            String people,
+            String participantList,
             String purpose,
             LocalDate date,
-            List<LocalTime> time
+            LocalTime startTime,
+            LocalTime endTime
     ) {
     }
 }

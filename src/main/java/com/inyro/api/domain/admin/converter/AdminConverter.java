@@ -22,12 +22,13 @@ public class AdminConverter {
 
     public static AdminResDto.ReservationDetailResDto toReservationDetailResDto(Reservation reservation) {
         return AdminResDto.ReservationDetailResDto.builder()
-                .memberId(reservation.getMember.getId())
+                .memberId(reservation.getMember().getId())
                 .reservationId(reservation.getId())
-                .people(reservation.getPeople())
+                .participantList(reservation.getParticipantList())
                 .purpose(reservation.getPurpose())
                 .date(reservation.getDate())
-                .time(reservation.getTime())
+                .startTime(reservation.getStartTime())
+                .endTime(reservation.getEndTime())
                 .build();
     }
 
