@@ -59,7 +59,7 @@ public class AuthController {
     }
 
     @Operation(summary = "비밀번호 변경", description = "현재 비밀번호와 바꿀 비밀번호를 입력해 비밀번호를 변경한다.")
-    @PostMapping("/password/reset")
+    @PostMapping("/password/change")
     public CustomResponse<String> changePassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @Valid @RequestBody AuthReqDto.PasswordChangeReqDTO authPasswordResetReqDTO
