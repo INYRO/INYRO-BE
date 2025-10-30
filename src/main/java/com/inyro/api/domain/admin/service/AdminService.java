@@ -16,4 +16,6 @@ public interface AdminService {
     void changeMemberStatus(long memberId, Status status);
 
     AdminResDto.ReservationsDetailsResDto getReservations();
+
+    AdminResDto.ReservationDetailResDto getReservation(long reservationId);
 }

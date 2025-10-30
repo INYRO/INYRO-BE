@@ -65,4 +65,13 @@ public class AdminController {
     public CustomResponse<AdminResDto.ReservationsDetailsResDto> getReservations() {
         return CustomResponse.onSuccess(adminService.getReservations());
     }
+
+    @Operation(summary = "관리자 예약 단일 조회")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/reservations/{reservationId}")
+    public CustomResponse<AdminResDto.ReservationDetailResDto> getReservation(
+            @PathVariable long reservationId
+    ) {
+        return CustomResponse.onSuccess(adminService.getReservation(reservationId));
+    }
 }

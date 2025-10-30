@@ -12,6 +12,8 @@ import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.reservation.entity.Reservation;
+import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
+import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -62,5 +64,13 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
 
         return AdminConverter.toReservationsDetailsResDto(reservationDetailResDtoList);
+    }
+
+    @Override
+    public AdminResDto.ReservationDetailResDto getReservation(long reservationId) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+        return AdminConverter.toReservationDetailResDto(reservation);
     }
 }
