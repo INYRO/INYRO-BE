@@ -13,8 +13,6 @@ public interface AuthCommandService {
     void changePassword(String sno, AuthReqDto.PasswordChangeReqDTO passwordChangeReqDTO);
 
     void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO);
-  
-    //void resetPasswordByVerification(AuthReqDto.AuthPasswordResetWithCodeReqDTO authPasswordResetWithCodeReqDTO);
-  
+
     AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto);
 }
