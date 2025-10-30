@@ -21,6 +21,7 @@ public class MemberConverter {
 
     public static MemberResDto.MemberDetailResDto toMemberDetailResDto(Member member){
         return MemberResDto.MemberDetailResDto.builder()
+                .id(member.getId())
                 .name(member.getName())
                 .sno(member.getSno())
                 .dept(member.getDept())
