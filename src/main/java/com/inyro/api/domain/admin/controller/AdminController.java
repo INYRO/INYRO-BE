@@ -1,5 +1,6 @@
 package com.inyro.api.domain.admin.controller;
 
+import com.inyro.api.domain.admin.dto.request.AdminReqDto;
 import com.inyro.api.domain.admin.dto.response.AdminResDto;
 import com.inyro.api.domain.admin.service.AdminService;
 import com.inyro.api.domain.member.entity.MemberSortType;
@@ -11,11 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +26,7 @@ public class AdminController {
 
     @Operation(summary = "유저 목록 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping()
+    @GetMapping("/members")
     public CustomResponse<PageResponse<AdminResDto.MemberDetailResDto>> getAllUsers(
             @RequestParam(required = false) MemberSortType sortType,
             @RequestParam(required = false) OrderType order,
@@ -36,5 +35,15 @@ public class AdminController {
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return CustomResponse.onSuccess(PageResponse.of(adminService.getAllUsers(sortType, order, pageable)));
+    }
+
+    @Operation(summary = "관리자 멤버 삭제")
+    //    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/members/withdrawal")
+    public CustomResponse<String> deleteMember(
+            @RequestBody AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto
+    ) {
+        adminService.deleteMember(adminDeleteMemberReqDto);
+        return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "유저 삭제 완료");
     }
 }

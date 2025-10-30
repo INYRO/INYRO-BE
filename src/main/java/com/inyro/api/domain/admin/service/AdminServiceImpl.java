@@ -1,6 +1,7 @@
 package com.inyro.api.domain.admin.service;
 
 import com.inyro.api.domain.admin.converter.AdminConverter;
+import com.inyro.api.domain.admin.dto.request.AdminReqDto;
 import com.inyro.api.domain.admin.dto.response.AdminResDto;
 import com.inyro.api.domain.admin.repository.CustomAdminRepository;
 import com.inyro.api.domain.member.entity.Member;
@@ -29,5 +30,10 @@ public class AdminServiceImpl implements AdminService {
         Page<Member> memberPage = customAdminRepository.findAllMembers(sortType, order, pageable);
 
         return memberPage.map(AdminConverter::toMemberDetailResDto);
+    }
+
+    @Override
+    public void deleteMember(AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto) {
+        memberRepository.deleteAllBySnoIn(adminDeleteMemberReqDto.snoList());
     }
 }
