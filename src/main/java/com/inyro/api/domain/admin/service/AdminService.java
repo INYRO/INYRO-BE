@@ -14,4 +14,6 @@ public interface AdminService {
     void deleteMember(AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto);
 
     void changeMemberStatus(long memberId, Status status);
+
+    AdminResDto.ReservationsDetailsResDto getReservations();
 }

@@ -11,12 +11,16 @@ import com.inyro.api.domain.member.entity.Status;
 import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
+import com.inyro.api.domain.reservation.entity.Reservation;
+import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,6 +30,7 @@ public class AdminServiceImpl implements AdminService {
 
     private final MemberRepository memberRepository;
     private final CustomAdminRepository customAdminRepository;
+    private final ReservationRepository reservationRepository;
 
     @Override
     public Page<AdminResDto.MemberDetailResDto> getAllUsers(MemberSortType sortType, OrderType order, Pageable pageable) {
@@ -46,5 +51,16 @@ public class AdminServiceImpl implements AdminService {
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         member.changeStatus(status);
+    }
+
+    @Override
+    public AdminResDto.ReservationsDetailsResDto getReservations() {
+        List<Reservation> reservations = reservationRepository.findAllByOrderByIdDesc();
+
+        List<AdminResDto.ReservationDetailResDto> reservationDetailResDtoList = reservations.stream()
+                .map(AdminConverter::toReservationDetailResDto)
+                .toList();
+
+        return AdminConverter.toReservationsDetailsResDto(reservationDetailResDtoList);
     }
 }

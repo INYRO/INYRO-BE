@@ -58,4 +58,11 @@ public class AdminController {
         adminService.changeMemberStatus(memberId, status);
         return CustomResponse.onSuccess("유저 status 변경 완료");
     }
+
+    @Operation(summary = "관리자 예약 조회")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/reservations")
+    public CustomResponse<AdminResDto.ReservationsDetailsResDto> getReservations() {
+        return CustomResponse.onSuccess(adminService.getReservations());
+    }
 }
