@@ -37,19 +37,24 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public ReservationResDto.ReservationCreateResDTO createReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
+        LocalDate date =  reservationCreateReqDTO.date();
         LocalTime start = reservationCreateReqDTO.timeSlots().get(0);
         LocalTime end = reservationCreateReqDTO.timeSlots().get(reservationCreateReqDTO.timeSlots().size() - 1).plusMinutes(30);
-        reservationValidator.validateTimeRange(start, end); // 범위 검증
 
-        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)) {
-            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
-        }
+        reservationValidator.validateTimeRange(start, end); // 범위 검증
+        reservationValidator.validateTimeLock(date, start, end, sno);   // 락 검증
+
+//        if (reservationRepository.existsByDateAndTimeSlots(reservationCreateReqDTO.date(), start, end)) {
+//            throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
+//        }
 
         Member member = memberRepository.findBySno(sno)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, start, end, member);
         reservationRepository.save(reservation);
+        deleteTimeLock(start, end, date);
+
         return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), start, end);
     }
 
@@ -104,5 +109,12 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
         return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
+    }
+
+    private void deleteTimeLock(LocalTime start, LocalTime end, LocalDate date) {
+        while(start.isBefore(end)) {
+            redisUtils.delete(date + ":" + start);
+            start = start.plusMinutes(30);
+        }
     }
 }
