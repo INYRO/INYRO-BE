@@ -107,7 +107,6 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         auth.resetPassword(passwordEncoder.encode(authPasswordResetReqDTO.newPassword()));
     }
 
-    @Override
     public void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO) {
         if (!redisUtils.hasKey(passwordResetReqDTO.sno())) {
             throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
