@@ -36,4 +36,8 @@ public class Member extends BaseEntity {
     public void linkAuth(Auth auth) {
         this.auth = auth;
     }
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
 }

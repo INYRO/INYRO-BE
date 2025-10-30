@@ -7,6 +7,9 @@ import com.inyro.api.domain.admin.repository.CustomAdminRepository;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.entity.MemberSortType;
 import com.inyro.api.domain.member.entity.OrderType;
+import com.inyro.api.domain.member.entity.Status;
+import com.inyro.api.domain.member.exception.MemberErrorCode;
+import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +38,13 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public void deleteMember(AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto) {
         memberRepository.deleteAllBySnoIn(adminDeleteMemberReqDto.snoList());
+    }
+
+    @Override
+    public void changeMemberStatus(long memberId, Status status) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.changeStatus(status);
     }
 }

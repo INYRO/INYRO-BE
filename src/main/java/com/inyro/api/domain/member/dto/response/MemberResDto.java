@@ -8,6 +8,7 @@ public class MemberResDto {
 
     @Builder
     public record MemberDetailResDto(
+            long id,
             String sno,
             String name,
             String dept,

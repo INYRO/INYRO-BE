@@ -5,6 +5,7 @@ import com.inyro.api.domain.admin.dto.response.AdminResDto;
 import com.inyro.api.domain.admin.service.AdminService;
 import com.inyro.api.domain.member.entity.MemberSortType;
 import com.inyro.api.domain.member.entity.OrderType;
+import com.inyro.api.domain.member.entity.Status;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.utils.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,5 +46,16 @@ public class AdminController {
     ) {
         adminService.deleteMember(adminDeleteMemberReqDto);
         return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "유저 삭제 완료");
+    }
+
+    @Operation(summary = "관리자 유저 속성 변경")
+    //    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/members/{memberId}status")
+    public CustomResponse<String> changeMemberStatus(
+            @PathVariable long memberId,
+            @RequestParam Status status
+    ) {
+        adminService.changeMemberStatus(memberId, status);
+        return CustomResponse.onSuccess("유저 status 변경 완료");
     }
 }
