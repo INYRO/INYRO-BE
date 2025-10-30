@@ -50,7 +50,7 @@ public class AdminController {
 
     @Operation(summary = "관리자 유저 속성 변경")
     //    @PreAuthorize("hasRole('ADMIN')")
-    @PatchMapping("/members/{memberId}status")
+    @PatchMapping("/members/{memberId}/status")
     public CustomResponse<String> changeMemberStatus(
             @PathVariable long memberId,
             @RequestParam Status status
