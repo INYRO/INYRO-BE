@@ -40,7 +40,7 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, Map<String, Boolean> availableSlots) {
+    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, Map<LocalTime, Boolean> availableSlots) {
         return  ReservationResDto.ReservationAvailableResDTO.builder()
                 .date(date)
                 .available(availableSlots)

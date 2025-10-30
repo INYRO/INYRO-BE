@@ -21,27 +21,27 @@ public class ReservationCalculator {
     private static final LocalTime OPEN_TIME = LocalTime.of(9, 0);
     private static final LocalTime CLOSE_TIME = LocalTime.of(22, 0);
 
-    public Map<String, Boolean> calculateAvailableSlots(LocalDate date) {
+    public Map<LocalTime, Boolean> calculateAvailableSlots(LocalDate date) {
 
-        List<String> allSlots = generateSlots();
-        Set<String> reservationTimeSet = generateTimeSetFromReservations(date);
-        Set<String> redisTimeSet = generateTimeSetFromRedis(date.toString(), allSlots);
+        List<LocalTime> allSlots = generateSlots();
+        Set<LocalTime> reservationTimeSet = generateTimeSetFromReservations(date);
+        Set<LocalTime> redisTimeSet = generateTimeSetFromRedis(date, allSlots);
         // TimeSet 병합
-        Set<String> mergedTimeSet = new HashSet<>(reservationTimeSet);
+        Set<LocalTime> mergedTimeSet = new HashSet<>(reservationTimeSet);
         mergedTimeSet.addAll(redisTimeSet);
 
         // 순서가 보장되는 맵으로 예약 가능한 시간을 표시
-        Map<String, Boolean> availableMap = new LinkedHashMap<>();
-        for (String time : allSlots) {
+        Map<LocalTime, Boolean> availableMap = new LinkedHashMap<>();
+        for (LocalTime time : allSlots) {
             availableMap.put(time, !mergedTimeSet.contains(time));
         }
         return availableMap;
     }
 
     // Redis 락에서 시간 추출
-    private Set<String> generateTimeSetFromRedis(String date, List<String> slots) {
-        Set<String> redisTimeSet = new HashSet<>();
-        for (String time : slots) {
+    private Set<LocalTime> generateTimeSetFromRedis(LocalDate date, List<LocalTime> slots) {
+        Set<LocalTime> redisTimeSet = new HashSet<>();
+        for (LocalTime time : slots) {
             if (redisUtils.hasKey(date + ":" + time)) {
                 redisTimeSet.add(time);
             }
@@ -50,13 +50,13 @@ public class ReservationCalculator {
     }
 
     // Reservation 에서 시간 추출
-    private Set<String> generateTimeSetFromReservations(LocalDate date) {
+    private Set<LocalTime> generateTimeSetFromReservations(LocalDate date) {
         List<Reservation> reservations = reservationRepository.findAllByDate(date);
-        Set<String> reservationTimeSet = new HashSet<>();
+        Set<LocalTime> reservationTimeSet = new HashSet<>();
         for (Reservation r : reservations) {
             LocalTime t = r.getStartTime();
             while (t.isBefore(r.getEndTime())) {
-                reservationTimeSet.add(t.toString());
+                reservationTimeSet.add(t);
                 t = t.plusMinutes(30);
             }
         }
@@ -64,11 +64,11 @@ public class ReservationCalculator {
     }
 
     // 전체 시간 목록 생성
-    private List<String> generateSlots() {
-        List<String> slots = new ArrayList<>();
+    private List<LocalTime> generateSlots() {
+        List<LocalTime> slots = new ArrayList<>();
         LocalTime start = OPEN_TIME;
         while (start.isBefore(CLOSE_TIME)) {
-            slots.add(start.toString());
+            slots.add(start);
             start = start.plusMinutes(30);
         }
         return slots;

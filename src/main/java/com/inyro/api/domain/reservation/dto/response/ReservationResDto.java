@@ -22,7 +22,7 @@ public class ReservationResDto {
     @Builder
     public record ReservationAvailableResDTO (
             LocalDate date,
-            Map<String, Boolean> available
+            Map<LocalTime, Boolean> available
     ){}
 
     @Builder
