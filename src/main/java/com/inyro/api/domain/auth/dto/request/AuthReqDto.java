@@ -16,7 +16,7 @@ public class AuthReqDto {
             @Pattern(regexp = PasswordPattern.REGEXP, message = PasswordPattern.MESSAGE)
             String password,
             @NotBlank
-            String major,
+            String dept,
             @NotBlank
             String name,
             Boolean enrolled

@@ -59,7 +59,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
             throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
         }
-        Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.major());
+        Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.dept());
 
         String encodedPassword = passwordEncoder.encode(authSignUpReqDTO.password());
         Auth auth = AuthConverter.toAuth(authSignUpReqDTO, encodedPassword, member);

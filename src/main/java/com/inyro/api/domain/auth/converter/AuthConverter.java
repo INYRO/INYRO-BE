@@ -24,7 +24,8 @@ public class AuthConverter {
 
     public static AuthResDto.SmulResDto toSmulResDto(AuthResDto.ClubInfo clubInfo, AuthResDto.DeptInfo deptInfo) {
         return AuthResDto.SmulResDto.builder()
-                .sno(clubInfo.STDNO())
+                .sno(deptInfo.STDNO())
+                .name(deptInfo.NM_KOR())
                 .dept(deptInfo.TMP_DEPT_MJR_NM())
                 .registered(isRegistered(clubInfo.STUD_APLY_YN()))
                 .build();
