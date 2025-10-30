@@ -25,7 +25,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    @Operation(summary = "유저 목록 조회")
+    @Operation(summary = "관리자 유저 목록 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
     public CustomResponse<PageResponse<AdminResDto.MemberDetailResDto>> getAllUsers(
