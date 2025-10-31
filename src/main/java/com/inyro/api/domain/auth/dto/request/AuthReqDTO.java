@@ -10,7 +10,7 @@ import static com.inyro.api.global.constant.MessageConstant.*;
 import static com.inyro.api.global.constant.PatternConstant.PASSWORD_PATTERN;
 import static com.inyro.api.global.constant.PatternConstant.SNO_PATTERN;
 
-public class AuthReqDto {
+public class AuthReqDTO {
 
 
     public record AuthSignUpReqDTO(
@@ -71,7 +71,7 @@ public class AuthReqDto {
     ) {
     }
   
-    public record SmulReqDto(
+    public record SmulReqDTO(
             @NotBlank(message = BLANK_SNO)
             @Pattern(regexp = SNO_PATTERN, message = WRONG_SNO)
             String sno,

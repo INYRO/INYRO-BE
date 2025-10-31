@@ -1,8 +1,8 @@
 package com.inyro.api.domain.admin.service;
 
 import com.inyro.api.domain.admin.converter.AdminConverter;
-import com.inyro.api.domain.admin.dto.request.AdminReqDto;
-import com.inyro.api.domain.admin.dto.response.AdminResDto;
+import com.inyro.api.domain.admin.dto.request.AdminReqDTO;
+import com.inyro.api.domain.admin.dto.response.AdminResDTO;
 import com.inyro.api.domain.admin.repository.CustomAdminRepository;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.entity.MemberSortType;
@@ -35,7 +35,7 @@ public class AdminServiceImpl implements AdminService {
     private final ReservationRepository reservationRepository;
 
     @Override
-    public Page<AdminResDto.MemberDetailResDto> getAllUsers(MemberSortType sortType, OrderType order, Pageable pageable) {
+    public Page<AdminResDTO.MemberDetailResDTO> getAllUsers(MemberSortType sortType, OrderType order, Pageable pageable) {
 
         Page<Member> memberPage = customAdminRepository.findAllMembers(sortType, order, pageable);
 
@@ -43,7 +43,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void deleteMember(AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto) {
+    public void deleteMember(AdminReqDTO.AdminDeleteMemberReqDTO adminDeleteMemberReqDto) {
         memberRepository.deleteAllBySnoIn(adminDeleteMemberReqDto.snoList());
     }
 
@@ -56,10 +56,10 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminResDto.ReservationsDetailsResDto getReservations() {
+    public AdminResDTO.ReservationsDetailsResDTO getReservations() {
         List<Reservation> reservations = reservationRepository.findAllByOrderByIdDesc();
 
-        List<AdminResDto.ReservationDetailResDto> reservationDetailResDtoList = reservations.stream()
+        List<AdminResDTO.ReservationDetailResDTO> reservationDetailResDtoList = reservations.stream()
                 .map(AdminConverter::toReservationDetailResDto)
                 .toList();
 
@@ -67,7 +67,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminResDto.ReservationDetailResDto getReservation(long reservationId) {
+    public AdminResDTO.ReservationDetailResDTO getReservation(long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 

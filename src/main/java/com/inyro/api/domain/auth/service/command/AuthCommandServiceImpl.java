@@ -1,7 +1,7 @@
 package com.inyro.api.domain.auth.service.command;
 
 import com.inyro.api.domain.auth.converter.AuthConverter;
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
@@ -19,7 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import com.inyro.api.domain.auth.dto.response.AuthResDto;
+import com.inyro.api.domain.auth.dto.response.AuthResDTO;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.http.MediaType;
@@ -51,7 +51,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private static final String BASE_URL = "https://smul.smu.ac.kr";
 
     @Override
-    public void signUp(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO) {
+    public void signUp(AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO) {
         if (!redisUtils.hasKey(authSignUpReqDTO.sno())) {
             throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
         }
@@ -98,7 +98,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public void changePassword(String sno, AuthReqDto.PasswordChangeReqDTO authPasswordResetReqDTO) {
+    public void changePassword(String sno, AuthReqDTO.PasswordChangeReqDTO authPasswordResetReqDTO) {
         Member member = memberRepository.findBySno(sno)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -107,7 +107,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         auth.resetPassword(passwordEncoder.encode(authPasswordResetReqDTO.newPassword()));
     }
 
-    public void resetPassword(AuthReqDto.PasswordResetReqDTO passwordResetReqDTO) {
+    public void resetPassword(AuthReqDTO.PasswordResetReqDTO passwordResetReqDTO) {
         if (!redisUtils.hasKey(passwordResetReqDTO.sno())) {
             throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
         }
@@ -122,17 +122,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         auth.resetPassword(passwordEncoder.encode(passwordResetReqDTO.newPassword()));
     }
     @Override
-    public AuthResDto.SmulResDto authenticate(AuthReqDto.SmulReqDto smulReqDto) {
+    public AuthResDTO.SmulResDTO authenticate(AuthReqDTO.SmulReqDTO smulReqDto) {
         String cookieHeader = getCookieHeader(smulReqDto);
-        AuthResDto.ClubInfo clubInfo = getClubData(smulReqDto, cookieHeader);
+        AuthResDTO.ClubInfo clubInfo = getClubData(smulReqDto, cookieHeader);
         if (clubInfo.STUD_APLY_YN().equals("Y")) {
             redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
         }
-        AuthResDto.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
+        AuthResDTO.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
         return AuthConverter.toSmulResDto(clubInfo, deptInfo);
     }
 
-    private Map<String, String> login(AuthReqDto.SmulReqDto smulReqDto) {
+    private Map<String, String> login(AuthReqDTO.SmulReqDTO smulReqDto) {
         try {
             Connection.Response loginResponse = Jsoup.connect(LOGIN_URL)
                     .method(Connection.Method.POST)
@@ -151,8 +151,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         }
     }
 
-    private AuthResDto.ClubInfo getClubData(AuthReqDto.SmulReqDto smulReqDto, String cookieHeader) {
-        AuthResDto.ClubInfoDto responseBody = clubWebClient.post()
+    private AuthResDTO.ClubInfo getClubData(AuthReqDTO.SmulReqDTO smulReqDto, String cookieHeader) {
+        AuthResDTO.ClubInfoDTO responseBody = clubWebClient.post()
                 .uri("/UsdMembReg/list.do")
                 .header("Cookie", cookieHeader)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -163,7 +163,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                         .with("@d#", "@d1#")
                         .with("@d1#tp", "dm"))
                 .retrieve()
-                .bodyToMono(AuthResDto.ClubInfoDto.class)
+                .bodyToMono(AuthResDTO.ClubInfoDTO.class)
                 .block();
         if (responseBody == null) {
             throw new AuthException(AuthErrorCode.SMUL_INTERNAL_SERVER_ERROR);
@@ -174,8 +174,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                 .orElseThrow(() -> new AuthException(AuthErrorCode.NO_CLUB_INFO));
     }
 
-    private AuthResDto.DeptInfo getDeptData(AuthReqDto.SmulReqDto smulReqDto, String cookieHeader) {
-        AuthResDto.DeptInfoDto responseBody = clubWebClient.post()
+    private AuthResDTO.DeptInfo getDeptData(AuthReqDTO.SmulReqDTO smulReqDto, String cookieHeader) {
+        AuthResDTO.DeptInfoDTO responseBody = clubWebClient.post()
                 .uri("/UsrSchMng/selectStdInfo.do")
                 .header("Cookie", cookieHeader)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -186,7 +186,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
                         .with("@d1#tp", "dm")
                 )
                 .retrieve()
-                .bodyToMono(AuthResDto.DeptInfoDto.class)
+                .bodyToMono(AuthResDTO.DeptInfoDTO.class)
                 .block();
         if (responseBody == null) {
             throw new AuthException(AuthErrorCode.SMUL_INTERNAL_SERVER_ERROR);
@@ -194,7 +194,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         return responseBody.dsStdInfoList().get(0);
     }
 
-    private String getCookieHeader(AuthReqDto.SmulReqDto smulReqDto) {
+    private String getCookieHeader(AuthReqDTO.SmulReqDTO smulReqDto) {
         Map<String, String> cookies = login(smulReqDto);
         return cookies.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())

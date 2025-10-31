@@ -1,7 +1,7 @@
 package com.inyro.api.domain.admin.controller;
 
-import com.inyro.api.domain.admin.dto.request.AdminReqDto;
-import com.inyro.api.domain.admin.dto.response.AdminResDto;
+import com.inyro.api.domain.admin.dto.request.AdminReqDTO;
+import com.inyro.api.domain.admin.dto.response.AdminResDTO;
 import com.inyro.api.domain.admin.service.AdminService;
 import com.inyro.api.domain.member.entity.MemberSortType;
 import com.inyro.api.domain.member.entity.OrderType;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -28,7 +27,7 @@ public class AdminController {
     @Operation(summary = "관리자 멤버 목록 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
-    public CustomResponse<PageResponse<AdminResDto.MemberDetailResDto>> getAllUsers(
+    public CustomResponse<PageResponse<AdminResDTO.MemberDetailResDTO>> getAllUsers(
             @RequestParam(required = false) MemberSortType sortType,
             @RequestParam(required = false) OrderType order,
             @RequestParam(defaultValue = "0") int page,
@@ -42,7 +41,7 @@ public class AdminController {
     //    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/members/withdrawal")
     public CustomResponse<String> deleteMember(
-            @RequestBody AdminReqDto.AdminDeleteMemberReqDto adminDeleteMemberReqDto
+            @RequestBody AdminReqDTO.AdminDeleteMemberReqDTO adminDeleteMemberReqDto
     ) {
         adminService.deleteMember(adminDeleteMemberReqDto);
         return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "유저 삭제 완료");
@@ -62,14 +61,14 @@ public class AdminController {
     @Operation(summary = "관리자 예약 목록 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/reservations")
-    public CustomResponse<AdminResDto.ReservationsDetailsResDto> getReservations() {
+    public CustomResponse<AdminResDTO.ReservationsDetailsResDTO> getReservations() {
         return CustomResponse.onSuccess(adminService.getReservations());
     }
 
     @Operation(summary = "관리자 예약 단일 조회")
 //    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/reservations/{reservationId}")
-    public CustomResponse<AdminResDto.ReservationDetailResDto> getReservation(
+    public CustomResponse<AdminResDTO.ReservationDetailResDTO> getReservation(
             @PathVariable long reservationId
     ) {
         return CustomResponse.onSuccess(adminService.getReservation(reservationId));

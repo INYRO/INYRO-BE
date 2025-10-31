@@ -1,6 +1,6 @@
 package com.inyro.api.domain.admin.converter;
 
-import com.inyro.api.domain.admin.dto.response.AdminResDto;
+import com.inyro.api.domain.admin.dto.response.AdminResDTO;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.reservation.entity.Reservation;
 import lombok.AccessLevel;
@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AdminConverter {
 
-    public static AdminResDto.MemberDetailResDto toMemberDetailResDto(Member member) {
-        return AdminResDto.MemberDetailResDto.builder()
+    public static AdminResDTO.MemberDetailResDTO toMemberDetailResDto(Member member) {
+        return AdminResDTO.MemberDetailResDTO.builder()
                 .name(member.getName())
                 .sno(member.getSno())
                 .dept(member.getDept())
@@ -20,8 +20,8 @@ public class AdminConverter {
                 .build();
     }
 
-    public static AdminResDto.ReservationDetailResDto toReservationDetailResDto(Reservation reservation) {
-        return AdminResDto.ReservationDetailResDto.builder()
+    public static AdminResDTO.ReservationDetailResDTO toReservationDetailResDto(Reservation reservation) {
+        return AdminResDTO.ReservationDetailResDTO.builder()
                 .memberId(reservation.getMember().getId())
                 .reservationId(reservation.getId())
                 .participantList(reservation.getParticipantList())
@@ -32,8 +32,8 @@ public class AdminConverter {
                 .build();
     }
 
-    public static AdminResDto.ReservationsDetailsResDto toReservationsDetailsResDto(List<AdminResDto.ReservationDetailResDto> reservationDetailResDtoList) {
-        return AdminResDto.ReservationsDetailsResDto.builder()
+    public static AdminResDTO.ReservationsDetailsResDTO toReservationsDetailsResDto(List<AdminResDTO.ReservationDetailResDTO> reservationDetailResDtoList) {
+        return AdminResDTO.ReservationsDetailsResDTO.builder()
                 .reservations(reservationDetailResDtoList)
                 .build();
     }

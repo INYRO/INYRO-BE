@@ -1,12 +1,12 @@
 package com.inyro.api.domain.auth.controller;
 
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 
 import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
-import com.inyro.api.domain.auth.dto.response.AuthResDto;
+import com.inyro.api.domain.auth.dto.response.AuthResDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class AuthController {
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public CustomResponse<String> signUp(
-            @Valid @RequestBody AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO
+            @Valid @RequestBody AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO
     ) {
         authCommandService.signUp(authSignUpReqDTO);
         return CustomResponse.onSuccess("회원가입 성공");
@@ -48,7 +48,7 @@ public class AuthController {
 
     @Operation(summary = "로그인")
     @PostMapping("/login")
-    public CustomResponse<?> login(@RequestBody AuthReqDto.AuthLoginReqDTO authLoginReqDTO) {
+    public CustomResponse<?> login(@RequestBody AuthReqDTO.AuthLoginReqDTO authLoginReqDTO) {
         throw new UnsupportedOperationException("이 API는 Swagger 문서용입니다.");
     }
 
@@ -62,7 +62,7 @@ public class AuthController {
     @PostMapping("/password/change")
     public CustomResponse<String> changePassword(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @Valid @RequestBody AuthReqDto.PasswordChangeReqDTO authPasswordResetReqDTO
+            @Valid @RequestBody AuthReqDTO.PasswordChangeReqDTO authPasswordResetReqDTO
     ) {
         authCommandService.changePassword(customUserDetails.getUsername(), authPasswordResetReqDTO);
         return CustomResponse.onSuccess("비밀번호가 변경되었습니다.");
@@ -71,7 +71,7 @@ public class AuthController {
     @Operation(summary = "비밀번호 재설정 (잃어버렸으르 때)", description = "샘물 인증 확인 후 진행")
     @PostMapping("/password/reset/smul")
     public CustomResponse<String> resetPassword(
-            @Valid @RequestBody AuthReqDto.PasswordResetReqDTO passwordResetReqDTO
+            @Valid @RequestBody AuthReqDTO.PasswordResetReqDTO passwordResetReqDTO
     ) {
         authCommandService.resetPassword(passwordResetReqDTO);
         return CustomResponse.onSuccess(HttpStatus.OK, "비밀번호 변경이 완료되었습니다.");
@@ -79,8 +79,8 @@ public class AuthController {
 
     @Operation(summary = "샘물 인증", description = "사용자로부터 샘물 아이디 비밀번호를 입력받아 동아리 회원인지 인증")
     @PostMapping("/smul")
-    public CustomResponse<AuthResDto.SmulResDto> authenticate(
-            @Valid @RequestBody AuthReqDto.SmulReqDto smulReqDto
+    public CustomResponse<AuthResDTO.SmulResDTO> authenticate(
+            @Valid @RequestBody AuthReqDTO.SmulReqDTO smulReqDto
     ) {
         return CustomResponse.onSuccess(authCommandService.authenticate(smulReqDto));
     }

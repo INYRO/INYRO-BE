@@ -2,9 +2,9 @@ package com.inyro.api.domain.admin.dto.request;
 
 import java.util.List;
 
-public class AdminReqDto {
+public class AdminReqDTO {
 
-    public record AdminDeleteMemberReqDto(
+    public record AdminDeleteMemberReqDTO(
             List<String> snoList
     ) {
     }

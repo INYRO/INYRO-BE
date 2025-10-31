@@ -1,6 +1,6 @@
 package com.inyro.api.domain.member.controller;
 
-import com.inyro.api.domain.member.dto.response.MemberResDto;
+import com.inyro.api.domain.member.dto.response.MemberResDTO;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
 import com.inyro.api.domain.member.service.query.MemberQueryService;
 import com.inyro.api.global.apiPayload.CustomResponse;
@@ -25,7 +25,7 @@ public class MemberController {
 
     @Operation(summary = "내 정보 조회")
     @GetMapping("/my")
-    public CustomResponse<MemberResDto.MemberDetailResDto> getMemberDetail(
+    public CustomResponse<MemberResDTO.MemberDetailResDTO> getMemberDetail(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         return CustomResponse.onSuccess(memberQueryService.getMemberDetail(customUserDetails.getUsername()));

@@ -1,6 +1,6 @@
 package com.inyro.api.domain.member.converter;
 
-import com.inyro.api.domain.member.dto.response.MemberResDto;
+import com.inyro.api.domain.member.dto.response.MemberResDTO;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.entity.Status;
 import lombok.AccessLevel;
@@ -19,8 +19,8 @@ public class MemberConverter {
                 .build();
     }
 
-    public static MemberResDto.MemberDetailResDto toMemberDetailResDto(Member member){
-        return MemberResDto.MemberDetailResDto.builder()
+    public static MemberResDTO.MemberDetailResDTO toMemberDetailResDto(Member member){
+        return MemberResDTO.MemberDetailResDTO.builder()
                 .id(member.getId())
                 .name(member.getName())
                 .sno(member.getSno())
