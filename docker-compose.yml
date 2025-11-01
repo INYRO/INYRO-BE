@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  inyro:
+    container_name: inyro_reservation
+    image: inyro/web:latest
+    env_file:
+      - ./secrets/.env
+    network_mode: host
+    restart: always
