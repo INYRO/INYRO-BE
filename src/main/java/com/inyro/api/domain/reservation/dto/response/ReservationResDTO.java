@@ -5,10 +5,9 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 
-public class ReservationResDto {
+public class ReservationResDTO {
 
     @Builder
     public record ReservationCreateResDTO(
@@ -26,7 +25,7 @@ public class ReservationResDto {
     ){}
 
     @Builder
-    public record ReservationResDTO(
+    public record ReservationDetailResDTO(
             Long reservationId,
             String date,
             String startTime,
@@ -51,7 +50,7 @@ public class ReservationResDto {
     ){}
 
     @Builder
-    public record ReservationTimeResDto(
+    public record ReservationTimeResDTO(
             LocalDate date,
             LocalTime time
     ) {

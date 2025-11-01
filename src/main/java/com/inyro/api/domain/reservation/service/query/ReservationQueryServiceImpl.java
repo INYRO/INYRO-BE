@@ -1,7 +1,7 @@
 package com.inyro.api.domain.reservation.service.query;
 
 import com.inyro.api.domain.reservation.converter.ReservationConverter;
-import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
+import com.inyro.api.domain.reservation.dto.response.ReservationResDTO;
 import com.inyro.api.domain.reservation.entity.Reservation;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import com.inyro.api.domain.reservation.service.ReservationCalculator;
@@ -26,13 +26,13 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
     private final ReservationRepository reservationRepository;
 
     @Override
-    public ReservationResDto.ReservationAvailableResDTO getAvailableReservation(LocalDate date) {
+    public ReservationResDTO.ReservationAvailableResDTO getAvailableReservation(LocalDate date) {
         Map<LocalTime, Boolean> available = reservationCalculator.calculateAvailableSlots(date);
         return ReservationConverter.toReservationAvailableResDTO(date, available);
     }
 
     @Override
-    public Page<ReservationResDto.ReservationResDTO> getMyReservations(String sno, Pageable pageable) {
+    public Page<ReservationResDTO.ReservationDetailResDTO> getMyReservations(String sno, Pageable pageable) {
         Page<Reservation> reservations = reservationRepository.findAllBySno(sno, pageable);
         return reservations.map(ReservationConverter::toReservationResDTO);
     }

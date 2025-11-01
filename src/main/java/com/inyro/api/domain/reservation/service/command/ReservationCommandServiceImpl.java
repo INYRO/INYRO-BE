@@ -5,8 +5,8 @@ import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.reservation.converter.ReservationConverter;
-import com.inyro.api.domain.reservation.dto.request.ReservationReqDto;
-import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
+import com.inyro.api.domain.reservation.dto.request.ReservationReqDTO;
+import com.inyro.api.domain.reservation.dto.response.ReservationResDTO;
 import com.inyro.api.domain.reservation.entity.Reservation;
 import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
@@ -36,7 +36,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     private final RedisUtils<String, String> redisUtils;
 
     @Override
-    public ReservationResDto.ReservationCreateResDTO createReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
+    public ReservationResDTO.ReservationCreateResDTO createReservation(ReservationReqDTO.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
         LocalDate date =  reservationCreateReqDTO.date();
         LocalTime start = reservationCreateReqDTO.timeSlots().get(0);
         LocalTime end = reservationCreateReqDTO.timeSlots().get(reservationCreateReqDTO.timeSlots().size() - 1).plusMinutes(30);
@@ -55,7 +55,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     }
 
     @Override
-    public ReservationResDto.ReservationUpdateResDTO updateReservation(Long reservationId, ReservationReqDto.ReservationUpdateReqDTO reservationUpdateReqDTO, String sno) {
+    public ReservationResDTO.ReservationUpdateResDTO updateReservation(Long reservationId, ReservationReqDTO.ReservationUpdateReqDTO reservationUpdateReqDTO, String sno) {
         Reservation reservation = reservationRepository.findByIdAndSno(reservationId, sno)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         if (reservationUpdateReqDTO.timeSlots() != null && !reservationUpdateReqDTO.timeSlots().isEmpty()) {
@@ -74,7 +74,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     }
 
     @Override
-    public ReservationResDto.ReservationDeleteResDTO deleteReservation(Long reservationId, String sno) {
+    public ReservationResDTO.ReservationDeleteResDTO deleteReservation(Long reservationId, String sno) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
         Member member = memberRepository.findBySno(sno)
@@ -99,7 +99,7 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
     }
 
     @Override
-    public ReservationResDto.ReservationTimeResDto lockTime(String sno, ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
+    public ReservationResDTO.ReservationTimeResDTO lockTime(String sno, ReservationReqDTO.ReservationTimeReqDTO reservationTimeReqDTO) {
         // 락을 생성하기 전에 이미 예약된 시간에 락을 거는지 확인 (일반적인 사용으로는 불가하나 악의적 접근 방어)
         if (reservationRepository.existsByDateAndTimeSlots(reservationTimeReqDTO.date(), reservationTimeReqDTO.time())) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);

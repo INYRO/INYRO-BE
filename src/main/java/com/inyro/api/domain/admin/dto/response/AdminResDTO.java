@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public class AdminResDto {
+public class AdminResDTO {
 
     @Builder
-    public record MemberDetailResDto(
+    public record MemberDetailResDTO(
             String sno,
             String name,
             String dept,
@@ -19,13 +19,13 @@ public class AdminResDto {
     }
 
     @Builder
-    public record ReservationsDetailsResDto(
-            List<ReservationDetailResDto> reservations
+    public record ReservationsDetailsResDTO(
+            List<ReservationDetailResDTO> reservations
     ) {
     }
 
     @Builder
-    public record ReservationDetailResDto(
+    public record ReservationDetailResDTO(
             long memberId,
             long reservationId,
             String participantList,

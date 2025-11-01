@@ -4,10 +4,10 @@ import com.inyro.api.domain.member.entity.Status;
 import lombok.Builder;
 
 
-public class MemberResDto {
+public class MemberResDTO {
 
     @Builder
-    public record MemberDetailResDto(
+    public record MemberDetailResDTO(
             long id,
             String sno,
             String name,

@@ -1,8 +1,8 @@
 package com.inyro.api.domain.reservation.converter;
 
 import com.inyro.api.domain.member.entity.Member;
-import com.inyro.api.domain.reservation.dto.request.ReservationReqDto;
-import com.inyro.api.domain.reservation.dto.response.ReservationResDto;
+import com.inyro.api.domain.reservation.dto.request.ReservationReqDTO;
+import com.inyro.api.domain.reservation.dto.response.ReservationResDTO;
 import com.inyro.api.domain.reservation.entity.Reservation;
 import com.inyro.api.domain.reservation.entity.ReservationStatus;
 import lombok.AccessLevel;
@@ -18,7 +18,7 @@ public class ReservationConverter {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public static Reservation toReservation(ReservationReqDto.ReservationCreateReqDTO reservationCreateReqDTO, LocalTime start, LocalTime end, Member member) {
+    public static Reservation toReservation(ReservationReqDTO.ReservationCreateReqDTO reservationCreateReqDTO, LocalTime start, LocalTime end, Member member) {
         return Reservation.builder()
                 .participantList(reservationCreateReqDTO.participantList())
                 .purpose(reservationCreateReqDTO.purpose())
@@ -30,8 +30,8 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationCreateResDTO toReservationCreateResDTO(Long reservationId, String reservationName, LocalDate date, LocalTime start, LocalTime end) {
-        return ReservationResDto.ReservationCreateResDTO.builder()
+    public static ReservationResDTO.ReservationCreateResDTO toReservationCreateResDTO(Long reservationId, String reservationName, LocalDate date, LocalTime start, LocalTime end) {
+        return ReservationResDTO.ReservationCreateResDTO.builder()
                 .reservationId(reservationId)
                 .reservationName(reservationName)
                 .date(String.valueOf(date))
@@ -40,15 +40,15 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, Map<LocalTime, Boolean> availableSlots) {
-        return  ReservationResDto.ReservationAvailableResDTO.builder()
+    public static ReservationResDTO.ReservationAvailableResDTO toReservationAvailableResDTO(LocalDate date, Map<LocalTime, Boolean> availableSlots) {
+        return  ReservationResDTO.ReservationAvailableResDTO.builder()
                 .date(date)
                 .available(availableSlots)
                 .build();
     }
 
-    public static ReservationResDto.ReservationUpdateResDTO toReservationUpdateResDTO(Reservation reservation) {
-        return ReservationResDto.ReservationUpdateResDTO.builder()
+    public static ReservationResDTO.ReservationUpdateResDTO toReservationUpdateResDTO(Reservation reservation) {
+        return ReservationResDTO.ReservationUpdateResDTO.builder()
                 .reservationId(reservation.getId())
                 .date(String.valueOf(reservation.getDate()))
                 .participantList(reservation.getParticipantList())
@@ -58,15 +58,15 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationDeleteResDTO toReservationDeleteResDTO(Long reservationId) {
-        return ReservationResDto.ReservationDeleteResDTO.builder()
+    public static ReservationResDTO.ReservationDeleteResDTO toReservationDeleteResDTO(Long reservationId) {
+        return ReservationResDTO.ReservationDeleteResDTO.builder()
                 .reservationId(reservationId)
                 .message("예약이 취소되었습니다.")
                 .build();
     }
 
-    public static ReservationResDto.ReservationResDTO toReservationResDTO(Reservation reservation) {
-        return  ReservationResDto.ReservationResDTO.builder()
+    public static ReservationResDTO.ReservationDetailResDTO toReservationResDTO(Reservation reservation) {
+        return  ReservationResDTO.ReservationDetailResDTO.builder()
                 .reservationId(reservation.getId())
                 .date(String.valueOf(reservation.getDate()))
                 .startTime(String.valueOf(reservation.getStartTime()))
@@ -75,8 +75,8 @@ public class ReservationConverter {
                 .build();
     }
 
-    public static ReservationResDto.ReservationTimeResDto toReservationTimeResDTO(ReservationReqDto.ReservationTimeReqDto reservationTimeReqDTO) {
-        return ReservationResDto.ReservationTimeResDto.builder()
+    public static ReservationResDTO.ReservationTimeResDTO toReservationTimeResDTO(ReservationReqDTO.ReservationTimeReqDTO reservationTimeReqDTO) {
+        return ReservationResDTO.ReservationTimeResDTO.builder()
                 .date(reservationTimeReqDTO.date())
                 .time(reservationTimeReqDTO.time())
                 .build();

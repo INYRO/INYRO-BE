@@ -4,10 +4,10 @@ import lombok.Builder;
 
 import java.util.List;
 
-public class AuthResDto {
+public class AuthResDTO {
 
     @Builder
-    public record SmulResDto(
+    public record SmulResDTO(
             String sno,
             String name,
             String dept,
@@ -16,7 +16,7 @@ public class AuthResDto {
     }
 
     @Builder
-    public record ClubInfoDto(
+    public record ClubInfoDTO(
             List<ClubInfo> dsClubAplyList
     ) {
     }
@@ -29,7 +29,7 @@ public class AuthResDto {
     ) {
     }
 
-    public record DeptInfoDto(
+    public record DeptInfoDTO(
             List<DeptInfo> dsStdInfoList
     ) {
     }

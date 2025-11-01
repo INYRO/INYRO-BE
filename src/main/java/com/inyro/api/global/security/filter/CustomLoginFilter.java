@@ -2,7 +2,7 @@ package com.inyro.api.global.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.global.apiPayload.CustomResponse;
@@ -45,15 +45,15 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         log.info("[ Login Filter ]  로그인 시도 : Custom Login Filter 작동 ");
         ObjectMapper objectMapper = new ObjectMapper();
-        AuthReqDto.AuthLoginReqDTO requestBody;
+        AuthReqDTO.AuthLoginReqDTO requestBody;
         try {
-            requestBody = objectMapper.readValue(request.getInputStream(), AuthReqDto.AuthLoginReqDTO.class);
+            requestBody = objectMapper.readValue(request.getInputStream(), AuthReqDTO.AuthLoginReqDTO.class);
         } catch (IOException e) {
             throw new AuthException(AuthErrorCode.AUTH_NOT_FOUND);
         }
 
         //DTO Validation 체크
-        Set<ConstraintViolation<AuthReqDto.AuthLoginReqDTO>> violations = validator.validate(requestBody);
+        Set<ConstraintViolation<AuthReqDTO.AuthLoginReqDTO>> violations = validator.validate(requestBody);
         if (!violations.isEmpty()) {
             String errorMessage = violations.stream()
                     .map(ConstraintViolation::getMessage)

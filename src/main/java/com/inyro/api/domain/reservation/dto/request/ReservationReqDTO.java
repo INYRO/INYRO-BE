@@ -8,7 +8,7 @@ import java.util.List;
 
 import static com.inyro.api.global.constant.MessageConstant.*;
 
-public class ReservationReqDto {
+public class ReservationReqDTO {
 
     public record ReservationCreateReqDTO(
             @NotBlank(message = BLANK_DATE)
@@ -35,7 +35,7 @@ public class ReservationReqDto {
             List<LocalTime> timeSlots
     ){}
 
-    public record ReservationTimeReqDto(
+    public record ReservationTimeReqDTO(
             LocalDate date,
             LocalTime time
     ) {

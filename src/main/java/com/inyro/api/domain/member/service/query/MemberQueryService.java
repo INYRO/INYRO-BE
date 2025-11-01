@@ -1,8 +1,8 @@
 package com.inyro.api.domain.member.service.query;
 
-import com.inyro.api.domain.member.dto.response.MemberResDto;
+import com.inyro.api.domain.member.dto.response.MemberResDTO;
 
 public interface MemberQueryService {
 
-    MemberResDto.MemberDetailResDto getMemberDetail(String sno);
+    MemberResDTO.MemberDetailResDTO getMemberDetail(String sno);
 }

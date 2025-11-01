@@ -1,11 +1,11 @@
 package com.inyro.api.domain.auth.converter;
 
 
-import com.inyro.api.domain.auth.dto.request.AuthReqDto;
+import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.entity.Role;
 import com.inyro.api.domain.member.entity.Member;
-import com.inyro.api.domain.auth.dto.response.AuthResDto;
+import com.inyro.api.domain.auth.dto.response.AuthResDTO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class AuthConverter {
 
 
-    public static Auth toAuth(AuthReqDto.AuthSignUpReqDTO authSignUpReqDTO, String password, Member member) {
+    public static Auth toAuth(AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO, String password, Member member) {
         return Auth.builder()
                 .sno(authSignUpReqDTO.sno())
                 .password(password)
@@ -22,8 +22,8 @@ public class AuthConverter {
                 .build();
     }
 
-    public static AuthResDto.SmulResDto toSmulResDto(AuthResDto.ClubInfo clubInfo, AuthResDto.DeptInfo deptInfo) {
-        return AuthResDto.SmulResDto.builder()
+    public static AuthResDTO.SmulResDTO toSmulResDto(AuthResDTO.ClubInfo clubInfo, AuthResDTO.DeptInfo deptInfo) {
+        return AuthResDTO.SmulResDTO.builder()
                 .sno(deptInfo.STDNO())
                 .name(deptInfo.NM_KOR())
                 .dept(deptInfo.TMP_DEPT_MJR_NM())
