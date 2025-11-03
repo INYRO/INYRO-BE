@@ -46,7 +46,8 @@ public class SecurityConfig {
             "/api/usage",
             "/swagger-ui/**",   // swagger 관련 URL
             "/v3/api-docs/**",
-//            "/**"
+            "/api/v1/auth/smul",
+            "/api/v1/auth/password/reset/smul"
     };
 
     @Bean
