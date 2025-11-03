@@ -20,3 +20,8 @@ spring:
     token:
       access-expiration-time: ${JWT_ACCESS_EXP}
       refresh-expiration-time: ${JWT_REFRESH_EXP}
+
+  data:
+    redis:
+      host: redis
+      port: 6379
