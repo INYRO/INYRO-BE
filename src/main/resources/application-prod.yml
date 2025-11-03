@@ -23,5 +23,5 @@ spring:
 
   data:
     redis:
-      host: redis
+      host: redis_container
       port: 6379
