@@ -35,6 +35,8 @@ public enum GeneralErrorCode implements BaseErrorCode {
     INVALID_ENUM(HttpStatus.BAD_REQUEST, "ENUM400", "ENUM 입력 오류"),
 
     INVALID_INTEGER(HttpStatus.BAD_REQUEST, "INTEGER400", "숫자만 입력 가능합니다"),
+
+    ROLE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "ROLE403", "관리자 권한이 필요합니다"),
     ;
 
     // 필요한 필드값 선언

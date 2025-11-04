@@ -15,7 +15,7 @@ public class AuthReqDTO {
 
     public record AuthSignUpReqDTO(
             @NotBlank(message = BLANK_SNO)
-//            @Pattern(regexp = SNO_PATTERN, message = WRONG_SNO)
+            @Pattern(regexp = SNO_PATTERN, message = WRONG_SNO)
             String sno,
 
             @NotBlank(message = BLANK_PASSWORD)
