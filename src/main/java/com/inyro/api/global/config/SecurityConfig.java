@@ -22,9 +22,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -56,29 +55,28 @@ public class SecurityConfig {
             "/api/v1/auth/reissue", // 토큰 재발급
             "/api/v1/auth/password/reset/code",
             "/api/usage",
-//            "/swagger-ui/**",   // swagger 관련 URL
-//            "/v3/api-docs/**",
             "/api/v1/auth/smul",
             "/api/v1/auth/password/reset/smul"
     };
 
     @Bean
     @Order(1)
-    public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // Swagger 관련 요청만 여기에 매칭
-                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated()
-                )
-                // 폼 로그인 활성화
-                .formLogin(form -> form
-                        .defaultSuccessUrl("/swagger-ui/index.html", true)
-                        .permitAll()
-                )
-                .logout(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable);
+    public SecurityFilterChain swaggerSecurityFilterChain(HttpSecurity http, PasswordEncoder encoder) throws Exception {
+        var user = User.withUsername(swaggerUser)
+                .password(encoder.encode(swaggerPass))
+                .roles("SWAGGER")
+                .build();
+        var swaggerUsers = new InMemoryUserDetailsManager(user);
 
+        http
+                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                // 👇 전역 빈 등록 없이 체인 내부에만 적용
+                .userDetailsService(swaggerUsers);
         return http.build();
     }
 
@@ -120,15 +118,4 @@ public class SecurityConfig {
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();}
-
-    @Bean
-    public UserDetailsService swaggerUsers() {
-        UserDetails swaggerUserDetails = User.builder()
-                .username(swaggerUser)
-                .password("{noop}" + swaggerPass) // 암호화 안함(noop)
-                .roles("SWAGGER")
-                .build();
-
-        return new InMemoryUserDetailsManager(swaggerUserDetails);
-    }
 }
