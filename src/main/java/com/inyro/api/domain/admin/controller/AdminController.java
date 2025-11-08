@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,7 +26,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @Operation(summary = "관리자 멤버 목록 조회")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/members")
     public CustomResponse<PageResponse<AdminResDTO.MemberDetailResDTO>> getAllUsers(
             @RequestParam(required = false) MemberSortType sortType,
@@ -38,7 +39,7 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 멤버 삭제")
-    //    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/members/withdrawal")
     public CustomResponse<String> deleteMember(
             @RequestBody AdminReqDTO.AdminDeleteMemberReqDTO adminDeleteMemberReqDto
@@ -48,7 +49,7 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 멤버 속성 변경")
-    //    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/members/{memberId}/status")
     public CustomResponse<String> changeMemberStatus(
             @PathVariable long memberId,
@@ -59,14 +60,14 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 예약 목록 조회")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/reservations")
     public CustomResponse<AdminResDTO.ReservationsDetailsResDTO> getReservations() {
         return CustomResponse.onSuccess(adminService.getReservations());
     }
 
     @Operation(summary = "관리자 예약 단일 조회")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/reservations/{reservationId}")
     public CustomResponse<AdminResDTO.ReservationDetailResDTO> getReservation(
             @PathVariable long reservationId
@@ -75,7 +76,7 @@ public class AdminController {
     }
 
     @Operation(summary = "관리자 예약 삭제")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/reservations/{reservationId}")
     public CustomResponse<String> deleteReservation(
             @PathVariable long reservationId

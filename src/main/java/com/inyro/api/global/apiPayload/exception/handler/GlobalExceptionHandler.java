@@ -7,9 +7,13 @@ import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.apiPayload.code.BaseErrorCode;
 import com.inyro.api.global.apiPayload.code.GeneralErrorCode;
 import com.inyro.api.global.apiPayload.exception.CustomException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -44,11 +48,26 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             errors.put(error.getField(), error.getDefaultMessage());
         });
-        ex.getBindingResult().getGlobalErrors().forEach(error ->
-                errors.put(error.getObjectName(), error.getDefaultMessage())
-        );
 
         BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED_DTO_FILED;
+        CustomResponse<Map<String, String>> errorResponse = CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors);
+        return ResponseEntity
+                .status(errorCode.getHttpStatus())
+                .body(errorResponse);
+    }
+
+    // ConstraintViolationException
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<CustomResponse<Map<String, String>>> handleConstraintViolation(ConstraintViolationException ex) {
+        log.warn("[ Validation Error - ConstraintViolationException ]: {}", ex.getMessage());
+
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String field = violation.getPropertyPath().toString();
+            errors.put(field, violation.getMessage());
+        });
+
+        BaseErrorCode errorCode = GeneralErrorCode.VALIDATION_FAILED_PARAM;
         CustomResponse<Map<String, String>> errorResponse = CustomResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errors);
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
@@ -68,6 +87,30 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomResponse<String>> handleAuthorizationDenied(AccessDeniedException ex) {
+        log.warn("[ AccessDeniedException ]: {}", ex.getMessage());
+        BaseErrorCode errorCode;
+        String code;
+        String message;
+
+        if (ex instanceof AuthorizationDeniedException) {
+            code = GeneralErrorCode.ROLE_ACCESS_DENIED.getCode();
+            message = GeneralErrorCode.ROLE_ACCESS_DENIED.getMessage();
+        } else {
+            code = "AccessDeniedException";
+            message = ex.getMessage();
+        }
+        CustomResponse<String> errorResponse = CustomResponse.onFailure(
+                code,
+                message,
+                null
+        );
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .body(errorResponse);
     }
 
