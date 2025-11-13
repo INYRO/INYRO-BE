@@ -1,5 +1,6 @@
 package com.inyro.api.domain.member.service.query;
 
+import com.inyro.api.domain.member.MemberReader;
 import com.inyro.api.domain.member.converter.MemberConverter;
 import com.inyro.api.domain.member.dto.response.MemberResDTO;
 import com.inyro.api.domain.member.entity.Member;
@@ -17,13 +18,11 @@ import org.springframework.stereotype.Service;
 @Transactional
 public class MemberQueryServiceImpl implements MemberQueryService {
 
-    private final MemberRepository memberRepository;
+    private final MemberReader memberReader;
 
     @Override
     public MemberResDTO.MemberDetailResDTO getMemberDetail(String sno) {
-        Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
+        Member member = memberReader.readMember(sno);
         return MemberConverter.toMemberDetailResDto(member);
     }
 }

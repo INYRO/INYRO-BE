@@ -1,5 +1,6 @@
 package com.inyro.api.domain.member.service.command;
 
+import com.inyro.api.domain.member.MemberReader;
 import com.inyro.api.domain.member.converter.MemberConverter;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.exception.MemberErrorCode;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final MemberRepository memberRepository;
+    private final MemberReader memberReader;
 
     @Override
     public Member createMember(String name, String sno, String dept) {
@@ -26,8 +28,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     @Override
     public void deleteMember(String sno) {
-        Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Member member = memberReader.readMember(sno);
         memberRepository.delete(member); // 하드 delete
     }
 }

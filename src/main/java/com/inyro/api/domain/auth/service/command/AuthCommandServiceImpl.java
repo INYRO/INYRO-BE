@@ -5,6 +5,8 @@ import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
+import com.inyro.api.domain.common.port.AuthVerificationPort;
+import com.inyro.api.domain.member.MemberReader;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
@@ -14,7 +16,6 @@ import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
-import com.inyro.api.global.utils.RedisUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -41,22 +41,21 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final MemberCommandService memberCommandService;
     private final MemberRepository memberRepository;
+    private final MemberReader memberReader;
+    private final AuthVerificationPort authVerificationPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenRepository tokenRepository;
     private final WebClient clubWebClient;
-    private final RedisUtils<String, String> redisUtils;
 
     private static final String LOGIN_URL = "https://smsso.smu.ac.kr/Login.do";
     private static final String BASE_URL = "https://smul.smu.ac.kr";
 
     @Override
     public void signUp(AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO) {
-        if (!redisUtils.hasKey(authSignUpReqDTO.sno())) {
-            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
-        }
+        verifySmulProcess(authSignUpReqDTO.sno());
 
-        if (memberRepository.findBySno(authSignUpReqDTO.sno()).isPresent()) {
+        if (memberRepository.existsBySno(authSignUpReqDTO.sno())) {
             throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
         }
         Member member = memberCommandService.createMember(authSignUpReqDTO.name(), authSignUpReqDTO.sno(), authSignUpReqDTO.dept());
@@ -66,7 +65,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
         member.linkAuth(auth);
 
-        redisUtils.delete(authSignUpReqDTO.sno());
+        authVerificationPort.deleteVerification(authSignUpReqDTO.sno());
     }
 
     @Override
@@ -99,28 +98,19 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public void changePassword(String sno, AuthReqDTO.PasswordChangeReqDTO authPasswordResetReqDTO) {
-        Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
-        Auth auth = member.getAuth();
-        auth.validateNotSamePassword(authPasswordResetReqDTO.newPassword(), passwordEncoder);
-        auth.resetPassword(passwordEncoder.encode(authPasswordResetReqDTO.newPassword()));
+        Member member = memberReader.readMember(sno);
+        applyNewPassword(member, authPasswordResetReqDTO.newPassword());
     }
 
     public void resetPassword(AuthReqDTO.PasswordResetReqDTO passwordResetReqDTO) {
-        if (!redisUtils.hasKey(passwordResetReqDTO.sno())) {
-            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
-        }
+        verifySmulProcess(passwordResetReqDTO.sno());
         if (!passwordResetReqDTO.newPassword().equals(passwordResetReqDTO.newPasswordConfirmation())) {
             throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
         }
-        Member member = memberRepository.findBySno(passwordResetReqDTO.sno())
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
-        Auth auth = member.getAuth();
-        auth.validateNotSamePassword(passwordResetReqDTO.newPassword(), passwordEncoder);
-        auth.resetPassword(passwordEncoder.encode(passwordResetReqDTO.newPassword()));
+        Member member = memberReader.readMember(passwordResetReqDTO.sno());
+        applyNewPassword(member, passwordResetReqDTO.newPassword());
     }
+
     @Override
     public AuthResDTO.SmulResDTO authenticate(AuthReqDTO.SmulReqDTO smulReqDto) {
         String cookieHeader = getCookieHeader(smulReqDto);
@@ -128,7 +118,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 //        if (clubInfo.STUD_APLY_YN().equals("Y")) {
 //            redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
 //        }
-        redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
+        authVerificationPort.saveVerification(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L);
         AuthResDTO.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
         return AuthConverter.toSmulResDto(clubInfo, deptInfo);
     }
@@ -200,5 +190,17 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         return cookies.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining("; "));
+    }
+
+    private void applyNewPassword(Member member, String passwordResetReqDTO) {
+        Auth auth = member.getAuth();
+        auth.validateNotSamePassword(passwordResetReqDTO, passwordEncoder);
+        auth.resetPassword(passwordEncoder.encode(passwordResetReqDTO));
+    }
+
+    private void verifySmulProcess(String sno) {
+        if (!authVerificationPort.isVerificationExists(sno)){
+            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
+        }
     }
 }
