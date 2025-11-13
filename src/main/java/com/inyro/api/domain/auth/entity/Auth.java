@@ -3,7 +3,7 @@ package com.inyro.api.domain.auth.entity;
 import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.domain.member.entity.Member;
-import com.inyro.api.global.entity.BaseEntity;
+import com.inyro.api.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
