@@ -16,7 +16,6 @@ import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.JwtDto;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
-import com.inyro.api.global.utils.RedisUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -55,9 +53,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public void signUp(AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO) {
-        if (authVerificationPort.isVerificationExists(authSignUpReqDTO.sno())) {
-            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
-        }
+        verifySmulProcess(authSignUpReqDTO.sno());
 
         if (memberRepository.existsBySno(authSignUpReqDTO.sno())) {
             throw new MemberException(MemberErrorCode.DUPLICATE_SNO);
@@ -107,9 +103,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     public void resetPassword(AuthReqDTO.PasswordResetReqDTO passwordResetReqDTO) {
-        if (authVerificationPort.isVerificationExists(passwordResetReqDTO.sno())) {
-            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
-        }
+        verifySmulProcess(passwordResetReqDTO.sno());
         if (!passwordResetReqDTO.newPassword().equals(passwordResetReqDTO.newPasswordConfirmation())) {
             throw new AuthException(AuthErrorCode.NEW_PASSWORD_DOES_NOT_MATCH);
         }
@@ -202,5 +196,11 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         Auth auth = member.getAuth();
         auth.validateNotSamePassword(passwordResetReqDTO, passwordEncoder);
         auth.resetPassword(passwordEncoder.encode(passwordResetReqDTO));
+    }
+
+    private void verifySmulProcess(String sno) {
+        if (!authVerificationPort.isVerificationExists(sno)){
+            throw new AuthException(AuthErrorCode.SMUL_VALIDATION_DOES_NOT_EXIST);
+        }
     }
 }
