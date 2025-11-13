@@ -1,8 +1,7 @@
 package com.inyro.api.domain.member.entity;
 
 import com.inyro.api.domain.auth.entity.Auth;
-import com.inyro.api.domain.member.exception.MemberException;
-import com.inyro.api.global.entity.BaseEntity;
+import com.inyro.api.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

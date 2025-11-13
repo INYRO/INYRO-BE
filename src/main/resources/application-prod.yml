@@ -1,4 +1,9 @@
 spring:
+  security:
+    swagger:
+      user: ${SWAGGER_USER}
+      pass: ${SWAGGER_PASS}
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC 드라이버 클래스 이름
     url: ${DB_URL}
@@ -20,3 +25,8 @@ spring:
     token:
       access-expiration-time: ${JWT_ACCESS_EXP}
       refresh-expiration-time: ${JWT_REFRESH_EXP}
+
+  data:
+    redis:
+      host: redis_container
+      port: 6379

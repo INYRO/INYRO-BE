@@ -1,9 +1,8 @@
 package com.inyro.api.domain.reservation.service.command;
 
+import com.inyro.api.domain.member.MemberReader;
 import com.inyro.api.domain.member.entity.Member;
-import com.inyro.api.domain.member.exception.MemberErrorCode;
-import com.inyro.api.domain.member.exception.MemberException;
-import com.inyro.api.domain.member.repository.MemberRepository;
+import com.inyro.api.domain.reservation.ReservationReader;
 import com.inyro.api.domain.reservation.converter.ReservationConverter;
 import com.inyro.api.domain.reservation.dto.request.ReservationReqDTO;
 import com.inyro.api.domain.reservation.dto.response.ReservationResDTO;
@@ -29,41 +28,41 @@ import java.util.List;
 @Transactional
 public class ReservationCommandServiceImpl implements ReservationCommandService {
 
-    private final MemberRepository memberRepository;
+    private final MemberReader memberReader;
+    private final ReservationReader reservationReader;
     private final ReservationRepository reservationRepository;
     private final ReservationValidator reservationValidator;
     private final ReservationLockService reservationLockService;
 
+    public record TimeRange(LocalTime start, LocalTime end) {}
+
     @Override
     public ReservationResDTO.ReservationCreateResDTO createReservation(ReservationReqDTO.ReservationCreateReqDTO reservationCreateReqDTO, String sno) {
         LocalDate date =  reservationCreateReqDTO.date();
-        LocalTime start = reservationCreateReqDTO.timeSlots().get(0);
-        LocalTime end = reservationCreateReqDTO.timeSlots().get(reservationCreateReqDTO.timeSlots().size() - 1).plusMinutes(30);
+        TimeRange range = calculateTimeRange(reservationCreateReqDTO.timeSlots());
 
-        reservationValidator.validateTimeRange(start, end); // 범위 검증
-        reservationLockService.validateTimeLock(date, start, end, sno);   // 락 검증
+        reservationValidator.validateTimeRange(range.start, range.end); // 범위 검증
+        reservationLockService.validateTimeLock(date, range.start, range.end, sno);   // 락 검증
 
-        Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
-
-        Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, start, end, member);
-        reservationRepository.save(reservation);
-        reservationLockService.deleteTimeLock(date, start, end);   // 락 해제
-
-        return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), start, end);
+        try{
+            Member member = memberReader.readMember(sno);
+            Reservation reservation = ReservationConverter.toReservation(reservationCreateReqDTO, range.start, range.end, member);
+            reservationRepository.save(reservation);
+            return ReservationConverter.toReservationCreateResDTO(reservation.getId(), member.getName(), reservationCreateReqDTO.date(), range.start, range.end);
+        } finally {
+            reservationLockService.deleteTimeLock(date, range.start, range.end);   // 락 해제
+        }
     }
 
     @Override
     public ReservationResDTO.ReservationUpdateResDTO updateReservation(Long reservationId, ReservationReqDTO.ReservationUpdateReqDTO reservationUpdateReqDTO, String sno) {
-        Reservation reservation = reservationRepository.findByIdAndSno(reservationId, sno)
-                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+        Reservation reservation = reservationReader.readReservation(reservationId);
         if (reservationUpdateReqDTO.timeSlots() != null && !reservationUpdateReqDTO.timeSlots().isEmpty()) {
-            LocalTime start = reservationUpdateReqDTO.timeSlots().get(0);
-            LocalTime end = reservationUpdateReqDTO.timeSlots().get(reservationUpdateReqDTO.timeSlots().size() - 1).plusMinutes(30);
-            reservationValidator.validateTimeRange(start, end);
+            TimeRange range = calculateTimeRange(reservationUpdateReqDTO.timeSlots());
+            reservationValidator.validateTimeRange(range.start, range.end);
 
             // 자기 자신 제외한 중복 체크
-            if (reservationRepository.existsByDateAndTimeSlotsAndIdNot(reservation.getDate(), start, end, reservation.getId())) {
+            if (reservationRepository.existsByDateAndTimeSlotsAndIdNot(reservation.getDate(), range.start, range.end, reservation.getId())) {
                 throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
             }
         }
@@ -74,10 +73,8 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public ReservationResDTO.ReservationDeleteResDTO deleteReservation(Long reservationId, String sno) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-        Member member = memberRepository.findBySno(sno)
-                .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+        Reservation reservation = reservationReader.readReservation(reservationId);
+        Member member = memberReader.readMember(sno);
 
         reservation.validateOwner(member.getId());
         reservationRepository.delete(reservation);
@@ -110,5 +107,11 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
         return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
+    }
+
+    private TimeRange calculateTimeRange(List<LocalTime> slots) {
+        LocalTime start = slots.get(0);
+        LocalTime end = slots.get(slots.size() - 1).plusMinutes(30);
+        return new TimeRange(start, end);
     }
 }

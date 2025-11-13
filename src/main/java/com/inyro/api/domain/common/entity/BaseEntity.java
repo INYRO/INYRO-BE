@@ -1,4 +1,4 @@
-package com.inyro.api.global.entity;
+package com.inyro.api.domain.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -11,9 +11,8 @@ import com.inyro.api.domain.member.entity.Status;
 import com.inyro.api.domain.member.exception.MemberErrorCode;
 import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
+import com.inyro.api.domain.reservation.ReservationReader;
 import com.inyro.api.domain.reservation.entity.Reservation;
-import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
-import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,12 +32,11 @@ public class AdminServiceImpl implements AdminService {
     private final MemberRepository memberRepository;
     private final CustomAdminRepository customAdminRepository;
     private final ReservationRepository reservationRepository;
+    private final ReservationReader reservationReader;
 
     @Override
     public Page<AdminResDTO.MemberDetailResDTO> getAllUsers(MemberSortType sortType, OrderType order, Pageable pageable) {
-
         Page<Member> memberPage = customAdminRepository.findAllMembers(sortType, order, pageable);
-
         return memberPage.map(AdminConverter::toMemberDetailResDto);
     }
 
@@ -68,17 +66,13 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AdminResDTO.ReservationDetailResDTO getReservation(long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-
+        Reservation reservation = reservationReader.readReservation(reservationId);
         return AdminConverter.toReservationDetailResDto(reservation);
     }
 
     @Override
     public void deleteReservation(long reservationId) {
-        Reservation reservation = reservationRepository.findById(reservationId)
-                .orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
-
+        Reservation reservation = reservationReader.readReservation(reservationId);
         reservationRepository.delete(reservation);
     }
 }

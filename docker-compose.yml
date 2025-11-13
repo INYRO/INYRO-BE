@@ -5,7 +5,7 @@ services:
     image: redis:7.2
     container_name: redis_container
     ports:
-      - "6379:6379"               # ✅ 외부에서도 필요시 접근 가능
+      - "6379:6379"
     networks:
       - inyro-network
     restart: unless-stopped
@@ -14,11 +14,11 @@ services:
     image: inyro/web:latest
     container_name: inyro_reservation
     ports:
-      - "8080:8080"               # ✅ 외부 접속용
+      - "8080:8080"
     env_file:
       - /home/ubuntu/secrets/.env
     depends_on:
-      - redis                     # ✅ Redis 먼저 시작
+      - redis
     networks:
       - inyro-network
     restart: unless-stopped

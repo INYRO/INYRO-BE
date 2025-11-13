@@ -3,7 +3,7 @@ package com.inyro.api.domain.reservation.entity;
 import com.inyro.api.domain.member.entity.Member;
 import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
 import com.inyro.api.domain.reservation.exception.ReservationException;
-import com.inyro.api.global.entity.BaseEntity;
+import com.inyro.api.domain.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
