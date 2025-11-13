@@ -125,9 +125,10 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     public AuthResDTO.SmulResDTO authenticate(AuthReqDTO.SmulReqDTO smulReqDto) {
         String cookieHeader = getCookieHeader(smulReqDto);
         AuthResDTO.ClubInfo clubInfo = getClubData(smulReqDto, cookieHeader);
-        if (clubInfo.STUD_APLY_YN().equals("Y")) {
-            redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
-        }
+//        if (clubInfo.STUD_APLY_YN().equals("Y")) {
+//            redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
+//        }
+        redisUtils.save(smulReqDto.sno(), clubInfo.STUD_APLY_YN(), 300L, TimeUnit.MINUTES);
         AuthResDTO.DeptInfo deptInfo = getDeptData(smulReqDto, cookieHeader);
         return AuthConverter.toSmulResDto(clubInfo, deptInfo);
     }

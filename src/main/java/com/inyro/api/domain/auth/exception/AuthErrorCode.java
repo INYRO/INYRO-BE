@@ -17,9 +17,9 @@ public enum AuthErrorCode implements BaseErrorCode {
     CURRENT_PASSWORD_DOES_NOT_MATCH(HttpStatus.BAD_REQUEST, "PASS400_2", "현재 비밀번호가 일치하지 않습니다."),
     NEW_PASSWORD_IS_CURRENT_PASSWORD(HttpStatus.BAD_REQUEST, "PASS400_3", "현재 비빌번호와 새 비밀번호가 일치합니다."),
     SMUL_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "AUTH500", "샘물 오류"),
-    SMUL_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH403", "샘물 아이디 또는 비밀번호가 틀림"),
+    SMUL_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH403", "샘물 아이디 혹은 비밀번호가 틀렸습니다."),
     NO_CLUB_INFO(HttpStatus.NOT_FOUND, "AUTH404", "이니로 동아리 정보가 존재하지 않음"),
-    SMUL_VALIDATION_DOES_NOT_EXIST(HttpStatus.UNPROCESSABLE_ENTITY, "AUTH422", "샘물 인증을 시도하지 않았거나 변조되었거나 만료되었습니다.")
+    SMUL_VALIDATION_DOES_NOT_EXIST(HttpStatus.UNPROCESSABLE_ENTITY, "AUTH422", "샘물 인증을 시도하지 않았거나, 변조 혹은 만료되었습니다.")
     ;
 
     private final HttpStatus httpStatus;
