@@ -13,8 +13,6 @@ import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.reservation.ReservationReader;
 import com.inyro.api.domain.reservation.entity.Reservation;
-import com.inyro.api.domain.reservation.exception.ReservationErrorCode;
-import com.inyro.api.domain.reservation.exception.ReservationException;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
