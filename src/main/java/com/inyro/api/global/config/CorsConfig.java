@@ -10,6 +10,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,9 +42,14 @@ public class CorsConfig implements WebMvcConfigurer {
         configuration.setAllowedOrigins(allowedOriginPatterns);
         configuration.setAllowedMethods(allowedHttpMethods);
 
-        configuration.setAllowedHeaders(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(List.of(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE, "PasswordToken"));
+        configuration.setAllowedHeaders(List.of("*"));
+
         configuration.setAllowCredentials(true); //credential TRUE
+
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type"
+        ));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
