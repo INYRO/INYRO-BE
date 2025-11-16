@@ -9,7 +9,7 @@ import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
-import com.inyro.api.global.utils.CookieUtil;
+import com.inyro.api.global.utils.CookieUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,7 +37,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final Validator validator;
-    private final CookieUtil cookieUtil;
+    private final CookieUtils cookieUtils;
 
     //로그인 시도 메서드
     @Override
@@ -97,7 +97,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String accessToken = jwtUtil.createJwtAccessToken(customUserDetails);
         String refreshToken = jwtUtil.createJwtRefreshToken(customUserDetails);
 
-        cookieUtil.addRefreshTokenCookie(response, refreshToken);
+        cookieUtils.addRefreshTokenCookie(response, refreshToken);
 
         //Client 에게 줄 Response 를 Build
         JwtResDTO.JwtATResDTO jwtDto = JwtResDTO.JwtATResDTO.builder()

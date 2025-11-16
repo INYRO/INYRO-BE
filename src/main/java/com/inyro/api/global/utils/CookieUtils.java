@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class CookieUtil {
+public class CookieUtils {
 
     @Value("${spring.profiles.active:local}")
     private String activeProfile;
