@@ -6,6 +6,7 @@ import com.inyro.api.domain.reservation.entity.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,8 +36,8 @@ public class Member extends BaseEntity {
     @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
     private Auth auth;
 
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reservation> reservations;
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
 
     public void linkAuth(Auth auth) {
         this.auth = auth;
