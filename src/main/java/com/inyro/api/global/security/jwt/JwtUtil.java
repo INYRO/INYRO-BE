@@ -1,7 +1,7 @@
 package com.inyro.api.global.security.jwt;
 
 import com.inyro.api.domain.auth.entity.Role;
-import com.inyro.api.global.security.jwt.dto.JwtDto;
+import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
@@ -103,7 +103,7 @@ public class JwtUtil {
     }
 
     // Refresh Token 기반 재발급
-    public JwtDto reissueToken(String refreshToken) throws SignatureException {
+    public JwtResDTO.JwtTokenPairResDTO reissueToken(String refreshToken) throws SignatureException {
         CustomUserDetails userDetails = new CustomUserDetails(
                 getSno(refreshToken),
                 null,
@@ -111,7 +111,7 @@ public class JwtUtil {
         );
         log.info("[JwtUtil] 새로운 토큰을 재발급합니다.");
 
-        return new JwtDto(
+        return new JwtResDTO.JwtTokenPairResDTO(
                 createJwtAccessToken(userDetails),
                 createJwtRefreshToken(userDetails)
         );

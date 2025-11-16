@@ -19,4 +19,8 @@ public class Token {
     @Id
     private String sno;
     private String token;
+
+    public void updateToken(String newToken) {
+        this.token = newToken;
+    }
 }

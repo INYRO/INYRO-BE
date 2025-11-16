@@ -13,9 +13,11 @@ import com.inyro.api.domain.member.exception.MemberException;
 import com.inyro.api.domain.member.repository.MemberRepository;
 import com.inyro.api.domain.member.service.command.MemberCommandService;
 import com.inyro.api.global.security.jwt.JwtUtil;
-import com.inyro.api.global.security.jwt.dto.JwtDto;
+import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
+import com.inyro.api.global.utils.CookieUtil;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +47,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final AuthVerificationPort authVerificationPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CookieUtil cookieUtil;
     private final TokenRepository tokenRepository;
     private final WebClient clubWebClient;
 
@@ -69,31 +72,49 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     @Override
-    public JwtDto reissueToken(JwtDto tokenDto) {
+    public JwtResDTO.JwtATResDTO reissueToken(String refreshToken, HttpServletResponse response) {
         log.info("[ Auth Service ] 토큰 재발급을 시작합니다.");
-        String refreshToken = tokenDto.refreshToken();
 
-        //Access Token 으로부터 사용자 Sno 추출
-        String sno = jwtUtil.getSno(refreshToken); // **수정부분**
-        log.info("[ Auth Service ] Sno ---> {}", sno);
+        if (refreshToken == null || refreshToken.isBlank()) {
+            log.error("[ Auth Service ] Refresh Token이 존재하지 않습니다.");
+            throw new AuthException(AuthErrorCode.TOKEN_NOT_FOUND);
+        }
 
-        //Access Token 에서의 Email 로 부터 DB 에 저장된 Refresh Token 가져오기
-        Token refreshTokenByDB = tokenRepository.findBySno(sno).orElseThrow(
-                () -> new AuthException(AuthErrorCode.INVALID_TOKEN)
-        );
-
-        //Refresh Token 이 유효한지 검사
-        jwtUtil.validateToken(refreshToken);
-
-        log.info("[ Auth Service ] Refresh Token 이 유효합니다.");
-
-        //만약 DB 에서 찾은 Refresh Token 과 파라미터로 온 Refresh Token 이 일치하면 새로운 토큰 발급
-        if (refreshTokenByDB.getToken().equals(refreshToken)) {
-            log.info("[ Auth Service ] 토큰을 재발급합니다.");
-            return jwtUtil.reissueToken(refreshToken);
-        } else {
+        try {
+            jwtUtil.validateToken(refreshToken);
+        } catch (Exception e) {
+            log.error("[ Auth Service ] Refresh Token 검증 실패: {}", e.getMessage());
             throw new AuthException(AuthErrorCode.INVALID_TOKEN);
         }
+
+        String sno = jwtUtil.getSno(refreshToken);
+        log.info("[ Auth Service ] Sno ---> {}", sno);
+
+        Token refreshTokenByDB = tokenRepository.findBySno(sno)
+                .orElseThrow(() -> new AuthException(AuthErrorCode.TOKEN_NOT_FOUND));
+
+        if (!refreshTokenByDB.getToken().equals(refreshToken)) {
+            log.error("[ Auth Service ] Refresh Token이 일치하지 않습니다.");
+            throw new AuthException(AuthErrorCode.INVALID_TOKEN);
+        }
+
+        log.info("[ Auth Service ] Refresh Token이 유효합니다. 새로운 토큰을 발급합니다.");
+
+        JwtResDTO.JwtTokenPairResDTO newTokens = jwtUtil.reissueToken(refreshToken);
+
+        // DB에 새 Refresh Token 업데이트
+        refreshTokenByDB.updateToken(newTokens.refreshToken());
+        tokenRepository.save(refreshTokenByDB);
+
+        // 새 Refresh Token을 쿠키로 설정
+        cookieUtil.addRefreshTokenCookie(response, newTokens.refreshToken());
+
+        log.info("[ Auth Service ] 토큰 재발급 완료");
+
+        // Access Token만 반환 (RT는 쿠키로 이미 전송)
+        return JwtResDTO.JwtATResDTO.builder()
+                .accessToken(newTokens.accessToken())
+                .build();
     }
 
     @Override
