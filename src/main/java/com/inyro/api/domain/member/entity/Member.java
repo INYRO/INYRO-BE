@@ -2,8 +2,12 @@ package com.inyro.api.domain.member.entity;
 
 import com.inyro.api.domain.auth.entity.Auth;
 import com.inyro.api.domain.common.entity.BaseEntity;
+import com.inyro.api.domain.reservation.entity.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,6 +35,9 @@ public class Member extends BaseEntity {
 
     @OneToOne(mappedBy = "member",cascade = CascadeType.ALL)
     private Auth auth;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reservation> reservations = new ArrayList<>();
 
     public void linkAuth(Auth auth) {
         this.auth = auth;

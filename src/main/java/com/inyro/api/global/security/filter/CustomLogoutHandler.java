@@ -3,6 +3,7 @@ package com.inyro.api.global.security.filter;
 import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
+import com.inyro.api.global.utils.CookieUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class CustomLogoutHandler implements LogoutHandler {
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, String> redisTemplate;
     private final TokenRepository tokenRepository;
+    private final CookieUtil cookieUtil;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -40,5 +42,7 @@ public class CustomLogoutHandler implements LogoutHandler {
         Optional<Token> token = tokenRepository.findBySno(sno);
         token.ifPresent(tokenRepository::delete);
         log.info("[ CustomLogoutHandler ] 블랙리스트 RefreshToken 삭제 완료");
+
+        cookieUtil.deleteRefreshTokenCookie(response); // 리프레시 토큰 삭제
     }
 }

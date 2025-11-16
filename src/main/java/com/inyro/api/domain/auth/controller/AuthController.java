@@ -4,14 +4,14 @@ import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 
 import com.inyro.api.domain.auth.service.command.AuthCommandService;
 import com.inyro.api.global.apiPayload.CustomResponse;
-import com.inyro.api.global.security.jwt.dto.JwtDto;
+import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
 import com.inyro.api.domain.auth.dto.response.AuthResDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
@@ -41,9 +40,10 @@ public class AuthController {
     //토큰 재발급 API
     @Operation(summary = "토큰 재발급")
     @PostMapping("/reissue")
-    public CustomResponse<?> reissue(@RequestBody JwtDto jwtDto) {
-        log.info("[ Auth Controller ] 토큰을 재발급합니다. ");
-        return CustomResponse.onSuccess(authCommandService.reissueToken(jwtDto));
+    public CustomResponse<JwtResDTO.JwtATResDTO> reissue(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+        return CustomResponse.onSuccess(authCommandService.reissueToken(refreshToken, response));
     }
 
     @Operation(summary = "로그인")

@@ -3,12 +3,13 @@ package com.inyro.api.domain.auth.service.command;
 import com.inyro.api.domain.auth.dto.request.AuthReqDTO;
 
 import com.inyro.api.domain.auth.dto.response.AuthResDTO;
-import com.inyro.api.global.security.jwt.dto.JwtDto;
+import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface AuthCommandService {
     void signUp(AuthReqDTO.AuthSignUpReqDTO authSignUpReqDTO);
 
-    JwtDto reissueToken(JwtDto jwtDto);
+    JwtResDTO.JwtATResDTO reissueToken(String refreshToken, HttpServletResponse response);
 
     void changePassword(String sno, AuthReqDTO.PasswordChangeReqDTO passwordChangeReqDTO);
 

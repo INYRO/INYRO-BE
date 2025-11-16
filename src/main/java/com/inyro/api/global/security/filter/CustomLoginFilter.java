@@ -7,8 +7,9 @@ import com.inyro.api.domain.auth.exception.AuthErrorCode;
 import com.inyro.api.domain.auth.exception.AuthException;
 import com.inyro.api.global.apiPayload.CustomResponse;
 import com.inyro.api.global.security.jwt.JwtUtil;
-import com.inyro.api.global.security.jwt.dto.JwtDto;
+import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.userdetails.CustomUserDetails;
+import com.inyro.api.global.utils.CookieUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +37,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final Validator validator;
+    private final CookieUtil cookieUtil;
 
     //로그인 시도 메서드
     @Override
@@ -92,15 +94,18 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails customUserDetails = (CustomUserDetails)authentication.getPrincipal();
 
+        String accessToken = jwtUtil.createJwtAccessToken(customUserDetails);
+        String refreshToken = jwtUtil.createJwtRefreshToken(customUserDetails);
+
+        cookieUtil.addRefreshTokenCookie(response, refreshToken);
 
         //Client 에게 줄 Response 를 Build
-        JwtDto jwtDto = JwtDto.builder()
-                .accessToken(jwtUtil.createJwtAccessToken(customUserDetails)) //access token 생성
-                .refreshToken(jwtUtil.createJwtRefreshToken(customUserDetails)) //refresh token 생성
+        JwtResDTO.JwtATResDTO jwtDto = JwtResDTO.JwtATResDTO.builder()
+                .accessToken(accessToken) //access token 생성
                 .build();
 
         // CustomResponse 사용하여 응답 통일
-        CustomResponse<JwtDto> responseBody = CustomResponse.onSuccess(jwtDto);
+        CustomResponse<JwtResDTO.JwtATResDTO> responseBody = CustomResponse.onSuccess(jwtDto);
 
         //JSON 변환
         ObjectMapper objectMapper = new ObjectMapper();
@@ -151,7 +156,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         // CustomResponse 사용하여 응답 통일
-        CustomResponse<JwtDto> responseBody = CustomResponse.onFailure(errorCode, errorMessage);
+        CustomResponse<JwtResDTO.JwtATResDTO> responseBody = CustomResponse.onFailure(errorCode, errorMessage);
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(Integer.parseInt(errorCode)); // HTTP 상태 코드 설정
