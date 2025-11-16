@@ -16,7 +16,7 @@ import com.inyro.api.global.security.jwt.JwtUtil;
 import com.inyro.api.global.security.jwt.dto.response.JwtResDTO;
 import com.inyro.api.global.security.jwt.entity.Token;
 import com.inyro.api.global.security.jwt.repository.TokenRepository;
-import com.inyro.api.global.utils.CookieUtil;
+import com.inyro.api.global.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final AuthVerificationPort authVerificationPort;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final CookieUtil cookieUtil;
+    private final CookieUtils cookieUtils;
     private final TokenRepository tokenRepository;
     private final WebClient clubWebClient;
 
@@ -107,7 +107,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
         tokenRepository.save(refreshTokenByDB);
 
         // 새 Refresh Token을 쿠키로 설정
-        cookieUtil.addRefreshTokenCookie(response, newTokens.refreshToken());
+        cookieUtils.addRefreshTokenCookie(response, newTokens.refreshToken());
 
         log.info("[ Auth Service ] 토큰 재발급 완료");
 
