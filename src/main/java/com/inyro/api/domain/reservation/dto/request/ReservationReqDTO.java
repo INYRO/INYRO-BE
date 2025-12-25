@@ -40,4 +40,10 @@ public class ReservationReqDTO {
             LocalTime time
     ) {
     }
+
+    public record ReservationTimeReturnReqDTO(
+            LocalDate date,
+            LocalTime time
+    ) {
+    }
 }

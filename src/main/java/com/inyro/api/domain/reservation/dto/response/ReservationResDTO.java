@@ -55,4 +55,11 @@ public class ReservationResDTO {
             LocalTime time
     ) {
     }
+
+    @Builder
+    public record ReservationTimeReturnResDTO(
+            LocalDate date,
+            LocalTime time
+    ) {
+    }
 }
