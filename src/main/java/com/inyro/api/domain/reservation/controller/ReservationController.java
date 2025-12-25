@@ -33,7 +33,7 @@ public class ReservationController {
     public CustomResponse<ReservationResDTO.ReservationCreateResDTO> createReservation(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody ReservationReqDTO.ReservationCreateReqDTO reservationCreateReqDTO
-            ) {
+    ) {
         return CustomResponse.onSuccess(reservationCommandService.createReservation(reservationCreateReqDTO, customUserDetails.getUsername()));
     }
 
@@ -41,7 +41,7 @@ public class ReservationController {
     @GetMapping("/available")
     public CustomResponse<ReservationResDTO.ReservationAvailableResDTO> getAvailableReservations(
             @RequestParam LocalDate date
-    ){
+    ) {
         return CustomResponse.onSuccess(reservationQueryService.getAvailableReservation(date));
     }
 
@@ -60,7 +60,7 @@ public class ReservationController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @PathVariable("reservationId") Long reservationId,
             @RequestBody ReservationReqDTO.ReservationUpdateReqDTO reservationUpdateReqDTO
-            ){
+    ) {
         return CustomResponse.onSuccess(reservationCommandService.updateReservation(reservationId, reservationUpdateReqDTO, customUserDetails.getUsername()));
     }
 
@@ -68,7 +68,7 @@ public class ReservationController {
     @DeleteMapping("/{reservationId}")
     public CustomResponse<ReservationResDTO.ReservationDeleteResDTO> deleteReservation(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @PathVariable("reservationId") Long reservationId){
+            @PathVariable("reservationId") Long reservationId) {
         return CustomResponse.onSuccess(reservationCommandService.deleteReservation(reservationId, customUserDetails.getUsername()));
     }
 
@@ -79,5 +79,14 @@ public class ReservationController {
             @RequestBody ReservationReqDTO.ReservationTimeReqDTO reservationTimeReqDto
     ) {
         return CustomResponse.onSuccess(reservationCommandService.lockTime(customUserDetails.getUsername(), reservationTimeReqDto));
+    }
+
+    @Operation(summary = "시간 점유 해제", description = "단일 시간에 대해서 획득한 락을 반납")
+    @PostMapping("/time/return")
+    public CustomResponse<ReservationResDTO.ReservationTimeReturnResDTO> returnTime(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody ReservationReqDTO.ReservationTimeReturnReqDTO reservationTimeReturnReqDTO
+    ) {
+        return CustomResponse.onSuccess(reservationCommandService.returnTime(customUserDetails.getUsername(), reservationTimeReturnReqDTO));
     }
 }

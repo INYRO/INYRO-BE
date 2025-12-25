@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -107,6 +108,18 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
         }
         return ReservationConverter.toReservationTimeResDTO(reservationTimeReqDTO);
+    }
+
+    @Override
+    public ReservationResDTO.ReservationTimeReturnResDTO returnTime(String sno, ReservationReqDTO.ReservationTimeReturnReqDTO reservationTimeReturnReqDTO) {
+        // 락의 소유권 확인
+        LocalDate date = reservationTimeReturnReqDTO.date();
+        LocalTime time = reservationTimeReturnReqDTO.time();
+        if (!Objects.equals(sno, reservationLockService.getLockValue(date, time))) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_LOCK_FORBBIEN);
+        }
+        reservationLockService.deleteTimeLock(date, time, time.plusMinutes(30));
+        return ReservationConverter.toReservationTimeReturnResDTO(reservationTimeReturnReqDTO);
     }
 
     private TimeRange calculateTimeRange(List<LocalTime> slots) {
