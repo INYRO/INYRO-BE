@@ -13,4 +13,6 @@ public interface ReservationCommandService {
     void updateExpiredReservations();
 
     ReservationResDTO.ReservationTimeResDTO lockTime(String sno, ReservationReqDTO.ReservationTimeReqDTO reservationTimeReqDTO);
+
+    ReservationResDTO.ReservationTimeReturnResDTO returnTime(String sno, ReservationReqDTO.ReservationTimeReturnReqDTO reservationTimeReturnReqDTO);
 }

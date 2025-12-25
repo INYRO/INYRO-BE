@@ -47,6 +47,11 @@ public class ReservationLockServiceImpl implements ReservationLockService {
         }
     }
 
+    @Override
+    public String getLockValue(LocalDate date, LocalTime time) {
+        return redisUtils.get(generateKey(date, time));
+    }
+
     private String generateKey(LocalDate date, LocalTime time) {
         return date + ":" + time;
     }

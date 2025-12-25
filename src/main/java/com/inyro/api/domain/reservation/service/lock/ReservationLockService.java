@@ -7,4 +7,5 @@ public interface ReservationLockService {
     void validateTimeLock(LocalDate date, LocalTime start, LocalTime end, String sno);
     boolean acquireLock(LocalDate date, LocalTime time, String sno);
     void deleteTimeLock(LocalDate date, LocalTime start, LocalTime end);
+    String getLockValue(LocalDate date, LocalTime time);
 }
