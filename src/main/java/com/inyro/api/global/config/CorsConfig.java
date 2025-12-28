@@ -29,6 +29,8 @@ public class CorsConfig implements WebMvcConfigurer {
         allowedOriginPatterns.add("https://api.inyro.com");
         allowedOriginPatterns.add("http://127.0.0.1:8080");
         allowedOriginPatterns.add("http://127.0.0.1:5500");
+        allowedOriginPatterns.add("https://inyro-fe.vercel.app");
+        allowedOriginPatterns.add("https://reserve.inyro.com");
 
         //허용하는 HTTP METHOD 지정
         ArrayList<String> allowedHttpMethods = new ArrayList<>();
