@@ -32,7 +32,17 @@ public class AdminConverter {
                 .build();
     }
 
-    public static AdminResDTO.ReservationsDetailsResDTO toReservationsDetailsResDto(List<AdminResDTO.ReservationDetailResDTO> reservationDetailResDtoList) {
+    public static AdminResDTO.ReservationSummaryDTO toReservationSummaryResDto(Reservation reservation) {
+        return AdminResDTO.ReservationSummaryDTO.builder()
+                .reservationId(reservation.getId())
+                .name(reservation.getMember().getName())
+                .date(reservation.getDate())
+                .startTime(reservation.getStartTime())
+                .endTime(reservation.getEndTime())
+                .build();
+    }
+
+    public static AdminResDTO.ReservationsDetailsResDTO toReservationsDetailsResDto(List<AdminResDTO.ReservationSummaryDTO> reservationDetailResDtoList) {
         return AdminResDTO.ReservationsDetailsResDTO.builder()
                 .reservations(reservationDetailResDtoList)
                 .build();

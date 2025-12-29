@@ -5,6 +5,7 @@ import com.inyro.api.domain.reservation.dto.response.ReservationResDTO;
 import com.inyro.api.domain.reservation.entity.Reservation;
 import com.inyro.api.domain.reservation.repository.ReservationRepository;
 import com.inyro.api.domain.reservation.service.ReservationCalculator;
+import com.inyro.api.domain.reservation.validator.ReservationValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,12 @@ public class ReservationQueryServiceImpl implements ReservationQueryService {
 
     private final ReservationCalculator reservationCalculator;
     private final ReservationRepository reservationRepository;
+    private final ReservationValidator reservationValidator;
 
     @Override
     public ReservationResDTO.ReservationAvailableResDTO getAvailableReservation(LocalDate date) {
+        // 이미 지난 날짜인지 검증
+        reservationValidator.validateNotPasteDate(date);
         Map<LocalTime, Boolean> available = reservationCalculator.calculateAvailableSlots(date);
         return ReservationConverter.toReservationAvailableResDTO(date, available);
     }

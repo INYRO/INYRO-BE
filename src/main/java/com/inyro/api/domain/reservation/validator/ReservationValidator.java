@@ -5,6 +5,7 @@ import com.inyro.api.domain.reservation.exception.ReservationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Component
@@ -17,6 +18,12 @@ public class ReservationValidator {
     public void validateTimeRange(LocalTime start, LocalTime end) {
         if (start.isBefore(OPENING_TIME) || end.isAfter(CLOSING_TIME)) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_OUT_OF_RANGE);
+        }
+    }
+
+    public void validateNotPasteDate(LocalDate date) {
+        if (date.isBefore(LocalDate.now())) {
+            throw new ReservationException(ReservationErrorCode.RESERVATION_DATE_PAST);
         }
     }
 }
