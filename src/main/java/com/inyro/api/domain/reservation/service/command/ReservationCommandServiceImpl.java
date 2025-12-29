@@ -42,6 +42,8 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         LocalDate date =  reservationCreateReqDTO.date();
         TimeRange range = calculateTimeRange(reservationCreateReqDTO.timeSlots());
 
+        // 이미 지난 날짜인지 검증
+        reservationValidator.validateNotPasteDate(date);
         reservationValidator.validateTimeRange(range.start, range.end); // 범위 검증
         reservationLockService.validateTimeLock(date, range.start, range.end, sno);   // 락 검증
 
@@ -97,6 +99,8 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
 
     @Override
     public ReservationResDTO.ReservationTimeResDTO lockTime(String sno, ReservationReqDTO.ReservationTimeReqDTO reservationTimeReqDTO) {
+        // 이미 지난 날짜인지 검증
+        reservationValidator.validateNotPasteDate(reservationTimeReqDTO.date());
         // 락을 생성하기 전에 이미 예약된 시간에 락을 거는지 확인 (일반적인 사용으로는 불가하나 악의적 접근 방어)
         if (reservationRepository.existsByDateAndTimeSlots(reservationTimeReqDTO.date(), reservationTimeReqDTO.time())) {
             throw new ReservationException(ReservationErrorCode.RESERVATION_TIME_CONFLICT);
