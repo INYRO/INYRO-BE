@@ -11,6 +11,7 @@ public class AdminResDTO {
 
     @Builder
     public record MemberDetailResDTO(
+            Long id,
             String sno,
             String name,
             String dept,
