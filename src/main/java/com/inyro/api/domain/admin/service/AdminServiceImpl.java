@@ -46,7 +46,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void changeMemberStatus(long memberId, Status status) {
+    public void changeMemberStatus(Long memberId, Status status) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
@@ -65,14 +65,13 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AdminResDTO.ReservationDetailResDTO getReservation(long reservationId) {
+    public AdminResDTO.ReservationDetailResDTO getReservation(Long reservationId) {
         Reservation reservation = reservationReader.readReservation(reservationId);
         return AdminConverter.toReservationDetailResDto(reservation);
     }
 
     @Override
-    public void deleteReservation(long reservationId) {
-        Reservation reservation = reservationReader.readReservation(reservationId);
-        reservationRepository.delete(reservation);
+    public void deleteReservation(AdminReqDTO.AdminDeleteReservationReqDTO adminDeleteReservationReqDTO) {
+        reservationRepository.deleteAllByIdIn(adminDeleteReservationReqDTO.reservationIdList());
     }
 }

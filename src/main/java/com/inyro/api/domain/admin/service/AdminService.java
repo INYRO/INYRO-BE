@@ -8,16 +8,17 @@ import com.inyro.api.domain.member.entity.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+
 public interface AdminService {
     Page<AdminResDTO.MemberDetailResDTO> getAllUsers(MemberSortType sortType, OrderType order, Pageable pageable);
 
     void deleteMember(AdminReqDTO.AdminDeleteMemberReqDTO adminDeleteMemberReqDto);
 
-    void changeMemberStatus(long memberId, Status status);
+    void changeMemberStatus(Long memberId, Status status);
 
     AdminResDTO.ReservationsDetailsResDTO getReservations();
 
-    AdminResDTO.ReservationDetailResDTO getReservation(long reservationId);
+    AdminResDTO.ReservationDetailResDTO getReservation(Long reservationId);
 
-    void deleteReservation(long reservationId);
+    void deleteReservation(AdminReqDTO.AdminDeleteReservationReqDTO adminDeleteReservationReqDTO);
 }

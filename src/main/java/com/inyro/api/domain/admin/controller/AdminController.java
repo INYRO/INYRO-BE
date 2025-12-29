@@ -52,7 +52,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/members/{memberId}/status")
     public CustomResponse<String> changeMemberStatus(
-            @PathVariable long memberId,
+            @PathVariable Long memberId,
             @RequestParam Status status
     ) {
         adminService.changeMemberStatus(memberId, status);
@@ -70,18 +70,18 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/reservations/{reservationId}")
     public CustomResponse<AdminResDTO.ReservationDetailResDTO> getReservation(
-            @PathVariable long reservationId
+            @PathVariable Long reservationId
     ) {
         return CustomResponse.onSuccess(adminService.getReservation(reservationId));
     }
 
     @Operation(summary = "관리자 예약 삭제")
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/reservations/{reservationId}")
+    @DeleteMapping("/reservations")
     public CustomResponse<String> deleteReservation(
-            @PathVariable long reservationId
+            @RequestBody AdminReqDTO.AdminDeleteReservationReqDTO adminDeleteReservationReqDTO
     ) {
-        adminService.deleteReservation(reservationId);
+        adminService.deleteReservation(adminDeleteReservationReqDTO);
         return CustomResponse.onSuccess(HttpStatus.NO_CONTENT, "예약 삭제 완료");
     }
 }
