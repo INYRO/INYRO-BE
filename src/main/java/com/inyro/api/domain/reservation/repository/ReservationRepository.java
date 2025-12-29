@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>{
 
+    @Query("SELECT r FROM Reservation r join fetch r.member order by r.id desc")
     List<Reservation> findAllByOrderByIdDesc();
 
     @Query("""

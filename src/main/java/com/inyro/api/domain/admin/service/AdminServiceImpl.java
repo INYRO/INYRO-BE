@@ -57,8 +57,8 @@ public class AdminServiceImpl implements AdminService {
     public AdminResDTO.ReservationsDetailsResDTO getReservations() {
         List<Reservation> reservations = reservationRepository.findAllByOrderByIdDesc();
 
-        List<AdminResDTO.ReservationDetailResDTO> reservationDetailResDtoList = reservations.stream()
-                .map(AdminConverter::toReservationDetailResDto)
+        List<AdminResDTO.ReservationSummaryDTO> reservationDetailResDtoList = reservations.stream()
+                .map(AdminConverter::toReservationSummaryResDto)
                 .toList();
 
         return AdminConverter.toReservationsDetailsResDto(reservationDetailResDtoList);
