@@ -14,6 +14,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
     RESERVATION_NOT_FOUND(HttpStatus.NOT_FOUND, "R404", "해당 예약을 찾을 수 없습니다."),
     RESERVATION_FORBIDDEN(HttpStatus.FORBIDDEN, "R403", "해당 예약에 대한 권한이 없습니다."),
     RESERVATION_LOCK_FORBBIEN(HttpStatus.FORBIDDEN, "R403", "해당 락에 대한 권한이 없습니다."),
+    RESERVATION_DATE_PAST(HttpStatus.FORBIDDEN, "R403", "이미 지난 날짜는 선택할 수 없습니다."),
     ;
 
     private final HttpStatus httpStatus;

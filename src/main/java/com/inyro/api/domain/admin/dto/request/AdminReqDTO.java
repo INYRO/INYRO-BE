@@ -8,4 +8,9 @@ public class AdminReqDTO {
             List<String> snoList
     ) {
     }
+
+    public record AdminDeleteReservationReqDTO(
+            List<Long> reservationIdList
+    ) {
+    }
 }

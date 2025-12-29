@@ -9,13 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long>{
 
+    @Query("SELECT r FROM Reservation r join fetch r.member order by r.id desc")
     List<Reservation> findAllByOrderByIdDesc();
 
     @Query("""
@@ -41,14 +40,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>{
         SELECT r
         FROM Reservation r
         JOIN r.member m
-        WHERE r.id = :reservationId AND m.sno = :sno
-    """)
-    Optional<Reservation> findByIdAndSno(@Param("reservationId")Long reservationId, @Param("sno")String sno);
-
-    @Query("""
-        SELECT r
-        FROM Reservation r
-        JOIN r.member m
         WHERE m.sno = :sno
     """)
     Page<Reservation> findAllBySno(@Param("sno")String sno, Pageable pageable);
@@ -64,4 +55,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>{
             @Param("date") LocalDate date,
             @Param("status") ReservationStatus status,
             @Param("time") LocalTime time
-    );}
+    );
+
+    void deleteAllByIdIn(List<Long> reservationIds);
+}

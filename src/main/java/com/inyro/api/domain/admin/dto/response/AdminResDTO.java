@@ -11,6 +11,7 @@ public class AdminResDTO {
 
     @Builder
     public record MemberDetailResDTO(
+            Long id,
             String sno,
             String name,
             String dept,
@@ -20,14 +21,14 @@ public class AdminResDTO {
 
     @Builder
     public record ReservationsDetailsResDTO(
-            List<ReservationDetailResDTO> reservations
+            List<ReservationSummaryDTO> reservations
     ) {
     }
 
     @Builder
     public record ReservationDetailResDTO(
-            long memberId,
-            long reservationId,
+            Long memberId,
+            Long reservationId,
             String participantList,
             String purpose,
             LocalDate date,
@@ -35,4 +36,14 @@ public class AdminResDTO {
             LocalTime endTime
     ) {
     }
+
+    @Builder
+    public record ReservationSummaryDTO(
+            Long reservationId,
+            String name,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime
+    )
+    {}
 }
