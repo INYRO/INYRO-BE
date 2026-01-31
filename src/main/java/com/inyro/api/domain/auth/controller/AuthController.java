@@ -27,7 +27,6 @@ public class AuthController {
 
     private final AuthCommandService authCommandService;
 
-
     @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public CustomResponse<String> signUp(
